@@ -1,0 +1,93 @@
+h1 {
+    font-weight: 900;
+}
+
+.main {
+    background-color: var(--surface-variant);
+    display: flex;
+    flex-direction: row;
+}
+
+.reg-image {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 100vh;
+    background-color: var(--surface-tint);
+}
+
+img {
+    width: 90%;
+    height: 90%;
+    align-self: center;
+    justify-self: center;
+    object-fit: contain;
+}
+
+.login-section {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.form-container {
+    background-color: rgb(from var(--inverse-primary) r g b / 0.5);
+    /*filter: opacity(50%);*/
+    max-width: 50vw;
+    min-width: 35vw;
+    height: 60vh;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form {
+    padding-top: 10vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+    gap: 20px;
+    width: 80%;
+}
+
+.form input {
+    width: 100%;
+    height: 60px;
+    padding: 10px;
+    /*margin-bottom: 5px;*/
+    border: var(--primary) solid 1px;
+    border-radius: 10px;
+}
+
+.form p {
+    font-size: 0.75rem;
+    color: var(--primary);
+    align-self: flex-end;
+    font-weight: 900;
+}
+
+.register {
+    align-self: center;
+    margin-top: 2vh;
+}
+
+.register-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+button {
+    background-color: var(--primary);
+    border-radius: 20px;
+    padding: 10px;
+    width: 80%;
+    min-width: 200px;
+    color: var(--on-primary);
+    font-weight: bold;
+    align-self: center;
+}

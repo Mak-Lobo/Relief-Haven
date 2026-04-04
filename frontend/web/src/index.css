@@ -1,0 +1,73 @@
+:root {
+    --seed-color: #0277BD;
+
+    /* colors */
+    --primary: rgb(49 98 141);
+    --surface-tint: rgb(49 98 141);
+    --on-primary: rgb(255 255 255);
+    --primary-container: rgb(207 229 255);
+    --on-primary-container: rgb(18 74 115);
+    --secondary: rgb(82 96 112);
+    --on-secondary: rgb(255 255 255);
+    --secondary-container: rgb(213 228 247);
+    --on-secondary-container: rgb(58 72 87);
+    --tertiary: rgb(105 87 121);
+    --on-tertiary: rgb(255 255 255);
+    --tertiary-container: rgb(240 219 255);
+    --on-tertiary-container: rgb(80 64 96);
+    --error: rgb(186 26 26);
+    --on-error: rgb(255 255 255);
+    --error-container: rgb(255 218 214);
+    --on-error-container: rgb(147 0 10);
+    --background: rgb(247 249 255);
+    --on-background: rgb(24 28 32);
+    --surface: rgb(247 249 255);
+    --on-surface: rgb(24 28 32);
+    --surface-variant: rgb(222 227 235);
+    --on-surface-variant: rgb(66 71 78);
+    --outline: rgb(114 119 127);
+    --outline-variant: rgb(194 199 207);
+    --shadow: rgb(0 0 0);
+    --scrim: rgb(0 0 0);
+    --inverse-surface: rgb(45 49 53);
+    --inverse-on-surface: rgb(239 241 246);
+    --inverse-primary: rgb(157 203 251);
+    --primary-fixed: rgb(207 229 255);
+    --on-primary-fixed: rgb(0 29 52);
+    --primary-fixed-dim: rgb(157 203 251);
+    --on-primary-fixed-variant: rgb(18 74 115);
+    --secondary-fixed: rgb(213 228 247);
+    --on-secondary-fixed: rgb(15 29 42);
+    --secondary-fixed-dim: rgb(185 200 218);
+    --on-secondary-fixed-variant: rgb(58 72 87);
+    --tertiary-fixed: rgb(240 219 255);
+    --on-tertiary-fixed: rgb(35 21 50);
+    --tertiary-fixed-dim: rgb(212 190 230);
+    --on-tertiary-fixed-variant: rgb(80 64 96);
+    --surface-dim: rgb(216 218 224);
+    --surface-bright: rgb(247 249 255);
+    --surface-container-lowest: rgb(255 255 255);
+    --surface-container-low: rgb(242 243 249);
+    --surface-container: rgb(236 238 244);
+    --surface-container-high: rgb(230 232 238);
+    --surface-container-highest: rgb(224 226 232);
+
+    --text: #333;
+    --text-h: #fff;
+    --bg: #fff;
+    --border: rgba(0, 0, 0, 0.1);
+    --code-bg: rgba(39, 174, 96, 0.1);
+    --accent: #0277BD;
+    --accent-bg: rgba(2, 119, 189, 0.1);
+    --accent-border: rgba(2, 119, 189, 0.5);
+    --social-bg: rgba(244, 243, 236, 0.5);
+    /*--shadow:*/
+    /*  rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;*/
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}

@@ -1,0 +1,18 @@
+
+main {
+    min-height: 100vh;
+    background-color: var(--surface-variant);
+}
+
+@keyframes compass {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.compass {
+    animation: compass 2s linear infinite;
+}
