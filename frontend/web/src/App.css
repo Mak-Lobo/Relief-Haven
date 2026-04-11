@@ -1,9 +1,3 @@
-
-main {
-    min-height: 100vh;
-    background-color: var(--surface-variant);
-}
-
 @keyframes compass {
     from {
         transform: rotate(0deg);
@@ -14,5 +8,7 @@ main {
 }
 
 .compass {
-    animation: compass 2s linear infinite;
+    animation: compass 7s linear infinite;
+    width: 150px;
+    height: 150px;
 }

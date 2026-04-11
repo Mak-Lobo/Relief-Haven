@@ -1,31 +1,35 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import styles from "./../../styles/register.module.css";
+import styles from "./../../styles/auth.module.css";
 
 const Registration = () => {
     return (
         <div className={styles["main"]}>
-            <div className={styles["reg-image"]}>
-                <img src="/relief-haven-high-resolution-logo.png" alt="Relief Haven Logo"/>
+            <div className={styles["authImagePane"]}>
+                <img
+                    className={styles["authLogo"]}
+                    src="/relief-haven-high-resolution-logo.png"
+                    alt="Relief Haven Logo"
+                />
             </div>
 
-            <section className={styles["register-section"]}>
-                <h1>Welcome to Relief Haven. Register to get started.</h1>
+            <section className={styles["registerSection"]}>
+                <h1 className={styles["heading"]}>Welcome to Relief Haven. Register to get started.</h1>
 
-                <div className={styles['disclaimer']}>Ensure the email used is provided for by the government or any
+                <div className={styles["disclaimer"]}>Ensure the email used is provided for by the government or any
                     organization authorized to use the
                     platform.
                 </div>
 
-                <div className={styles["form-container"]}>
-                    <div className={styles["form"]}>
-                        <div className={styles['names']}>
-                            <input type="text" placeholder="Enter first name"/>
-                            <input type="text" placeholder="Enter last name"/>
+                <div className={styles["registerFormContainer"]}>
+                    <div className={styles["registerForm"]}>
+                        <div className={styles["names"]}>
+                            <input type="text" placeholder="Enter first name" />
+                            <input type="text" placeholder="Enter last name" />
                         </div>
-                        <div className={styles['num-email']}>
-                            <input type="tel" placeholder="Enter phone number"/>
-                            <input type="email" placeholder="Enter email"/>
+                        <div className={styles["numEmail"]}>
+                            <input type="tel" placeholder="Enter phone number" />
+                            <input type="email" placeholder="Enter email" />
                         </div>
 
                         <select defaultValue="">
@@ -49,14 +53,14 @@ const Registration = () => {
                             <option value="administrator">Administrator</option>
                         </select>
 
-                        <input type="password" placeholder="Enter password"/>
-                        <input type="password" placeholder="Reenter password"/>
-                        <button>Create account</button>
+                        <input type="password" placeholder="Enter password" />
+                        <input type="password" placeholder="Reenter password" />
+                        <button className={styles["submitButton"]}>Create account</button>
                     </div>
 
-                    <p className={styles["login"]}>
+                    <p className={styles["loginPrompt"]}>
                         Already have an account? Click {' '}
-                        <Link to="/login" className={styles["login-link"]}>
+                        <Link to="/login" className={styles["authLink"]}>
                             here
                         </Link> {' '}
                         to continue.

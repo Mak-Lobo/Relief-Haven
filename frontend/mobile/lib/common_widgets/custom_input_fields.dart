@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 
 class CustomTxtFormFields extends StatelessWidget {
-  final Icon leadingIcon;
+  Icon? leadingIcon;
   final String labelText;
   final String hintText;
   Icon? trailingIcon;
-  bool? obscureText;
+  bool? obscureText, enabledField;
 
   CustomTxtFormFields({
     super.key,
-    required this.leadingIcon,
-    required this.labelText,
+    this.leadingIcon,
+    this.labelText = "",
     required this.hintText,
     this.trailingIcon,
     this.obscureText = false,
+    this.enabledField = true,
   });
 
   @override
@@ -26,6 +27,7 @@ class CustomTxtFormFields extends StatelessWidget {
         labelText: labelText,
         hintText: hintText,
         suffixIcon: trailingIcon,
+        enabled: enabledField!,
         hintStyle: TextStyle(
           color: Theme.of(
             context,

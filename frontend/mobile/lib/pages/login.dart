@@ -9,7 +9,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var header = MediaQuery.of(context).size.height * 0.25;
+    var header = MediaQuery.sizeOf(context).height * 0.25;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceTint,

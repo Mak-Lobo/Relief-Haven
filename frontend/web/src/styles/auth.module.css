@@ -1,14 +1,10 @@
-h1 {
-    font-weight: 900;
-}
-
 .main {
     background-color: var(--surface-variant);
     display: flex;
     flex-direction: row;
 }
 
-.reg-image {
+.authImagePane {
     display: flex;
     flex-direction: column;
     width: 50%;
@@ -16,7 +12,7 @@ h1 {
     background-color: var(--surface-tint);
 }
 
-img {
+.authLogo {
     width: 90%;
     height: 90%;
     align-self: center;
@@ -24,7 +20,8 @@ img {
     object-fit: contain;
 }
 
-.login-section {
+.loginSection,
+.registerSection {
     width: 50%;
     display: flex;
     flex-direction: column;
@@ -32,56 +29,110 @@ img {
     justify-content: center;
 }
 
+.heading {
+    font-weight: 900;
+}
 
-.form-container {
+.disclaimer {
+    width: 40vw;
+    font-weight: 600;
+}
+
+.loginFormContainer,
+.registerFormContainer {
     background-color: rgb(from var(--inverse-primary) r g b / 0.5);
-    /*filter: opacity(50%);*/
-    max-width: 50vw;
-    min-width: 35vw;
-    height: 60vh;
     border-radius: 30px;
     display: flex;
     flex-direction: column;
 }
 
-.form {
-    padding-top: 10vh;
+.loginFormContainer {
+    max-width: 50vw;
+    min-width: 35vw;
+    height: 60vh;
+}
+
+.registerFormContainer {
+    width: 40vw;
+    max-height: 70vh;
+    min-height: 500px;
+}
+
+.loginForm,
+.registerForm {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-self: center;
     gap: 20px;
+    box-sizing: border-box;
+}
+
+.loginForm {
+    padding-top: 10vh;
     width: 80%;
 }
 
-.form input {
-    width: 100%;
-    height: 60px;
-    padding: 10px;
-    /*margin-bottom: 5px;*/
-    border: var(--primary) solid 1px;
-    border-radius: 10px;
+.registerForm {
+    padding-top: 5vh;
+    width: 35vw;
 }
 
-.form p {
+.loginForm input,
+.registerForm input,
+.registerForm select {
+    width: 100%;
+    box-sizing: border-box;
+    border: var(--primary) solid 1px;
+    border-radius: 10px;
+    background-color: var(--surface-bright);
+}
+
+.loginForm input {
+    height: 60px;
+    padding: 10px;
+}
+
+.registerForm input,
+.registerForm select {
+    height: 50px;
+    padding: 0 10px;
+}
+
+.forgotPassword {
     font-size: 0.75rem;
     color: var(--primary);
     align-self: flex-end;
     font-weight: 900;
 }
 
-.register {
+.names,
+.numEmail {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+}
+
+.names input,
+.numEmail input {
+    flex: 1;
+    min-width: 0;
+}
+
+.registerPrompt,
+.loginPrompt {
     align-self: center;
     margin-top: 2vh;
 }
 
-.register-link {
+.authLink {
     color: var(--primary);
     text-decoration: none;
     font-weight: 500;
 }
 
-button {
+.submitButton {
     background-color: var(--primary);
     border-radius: 20px;
     padding: 10px;
@@ -90,4 +141,8 @@ button {
     color: var(--on-primary);
     font-weight: bold;
     align-self: center;
+}
+
+.registerForm select option {
+    background-color: var(--surface-tint);
 }

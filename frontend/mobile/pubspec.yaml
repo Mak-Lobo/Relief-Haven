@@ -28,8 +28,15 @@ dependencies:
   cupertino_icons: ^1.0.8
   dio: any
   riverpod: any
+  flutter_riverpod: any
   shared_preferences: any
   google_fonts: ^8.0.2
+  shimmer: any
+  connectivity_plus: any
+  intl: any
+  flutter_dotenv: any
+  supabase_flutter: any
+  logger: any
 
 
 dev_dependencies:

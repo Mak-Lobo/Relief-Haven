@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:relief_haven_mobile/pages/donations.dart';
 
 import 'package:relief_haven_mobile/pages/login.dart';
 import 'package:relief_haven_mobile/pages/registration.dart';
@@ -56,6 +57,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: RegistrationScreen());
+    return Scaffold(body: DonationScreen());
   }
 }

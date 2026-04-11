@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/widget_previews.dart';
 import 'package:relief_haven_mobile/common_widgets/custom_input_fields.dart';
 
 class RegistrationScreen extends StatelessWidget {
@@ -8,7 +7,7 @@ class RegistrationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var header = MediaQuery.of(context).size.height * 0.25;
+    var header = MediaQuery.sizeOf(context).height * 0.25;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceTint,
