@@ -5,7 +5,7 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return "Welcome to Relief Haven backend"
 
 
 @app.get("/hello/{name}")

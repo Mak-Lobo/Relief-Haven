@@ -1,0 +1,130 @@
+/* Shared form screens */
+.formFrame {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0;
+}
+
+.formCard {
+    width: min(100%, 980px);
+    padding: 30px 54px 42px;
+    border-radius: 22px;
+    background: rgb(from var(--surface-bright) r g b / 0.88);
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 64px;
+    margin-top: 22px;
+    padding: 26px 26px 8px;
+    border-radius: 20px;
+    background: var(--surface-container-low);
+}
+
+.formField {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.textInput,
+.textArea {
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 12px;
+    background: var(--surface-bright);
+    font: inherit;
+    color: var(--on-surface);
+}
+
+.textInput {
+    min-height: 46px;
+    padding: 0 14px;
+}
+
+.textArea {
+    min-height: 110px;
+    padding: 14px;
+    resize: vertical;
+    border: var(--outline) solid 1px;
+}
+
+/* Update shelter sliders */
+.sliderGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 22px;
+    padding: 8px 12px;
+}
+
+.sliderHeaderRow {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.sliderSectionTitle {
+    margin: 0;
+    color: var(--on-surface);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.sliderPillMeta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.sliderMeta {
+    color: var(--on-surface-variant);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.sliderRow {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: center;
+}
+
+.sliderField {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.valuePillGroup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.valuePill {
+    min-width: 74px;
+    padding: 8px 0;
+    border: 1px solid rgb(from var(--outline) r g b / 0.7);
+    border-radius: 12px;
+    background: var(--surface-container-lowest);
+    color: var(--on-surface);
+    font-weight: 700;
+    text-align: center;
+}
+
+.valueUnit {
+    color: var(--on-surface);
+    font-size: 1.6rem;
+}
+
+@media (max-width: 1100px) {
+    .formGrid,
+    .sliderRow {
+        grid-template-columns: 1fr;
+    }
+}

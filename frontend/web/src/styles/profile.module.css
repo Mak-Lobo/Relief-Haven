@@ -1,0 +1,38 @@
+/* Profile view */
+.profileOuter {
+    width: min(100%, 980px);
+    padding: 36px 42px 40px;
+    border-radius: 22px;
+    background: rgb(from var(--surface-bright) r g b / 0.85);
+}
+
+.profileCard {
+    margin-top: 24px;
+    border-radius: 24px;
+    padding: 34px 42px;
+    background: var(--surface-container-low);
+}
+
+.profileGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px 40px;
+}
+
+.profileField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fieldValue {
+    color: var(--on-surface);
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+@media (max-width: 1100px) {
+    .profileGrid {
+        grid-template-columns: 1fr;
+    }
+}

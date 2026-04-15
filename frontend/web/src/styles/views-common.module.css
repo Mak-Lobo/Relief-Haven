@@ -1,0 +1,157 @@
+/* Shared page layout */
+.pageStack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.pageFrame {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.pageHeaderRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.pageTitle,
+.pageTitleCentered,
+.sectionTitle {
+    margin: 0;
+    color: var(--on-surface);
+    font-weight: 800;
+}
+
+.pageTitle {
+    font-size: 2rem;
+}
+
+.pageTitleCentered {
+    text-align: center;
+    font-size: 2rem;
+}
+
+.fieldLabel {
+    color: var(--on-surface-variant);
+    font-size: 0.98rem;
+}
+
+/* Shared table styles */
+.tableTitle {
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+    color: var(--on-surface);
+}
+
+.dataTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: 1px solid rgb(from var(--outline) r g b / 0.45);
+    border-radius: 16px;
+    background: rgb(from var(--surface-bright) r g b / 0.92);
+}
+
+.dataTable th,
+.dataTable td {
+    padding: 14px 12px;
+    text-align: left;
+    border-right: 1px solid rgb(from var(--outline) r g b / 0.35);
+    border-bottom: 1px solid rgb(from var(--outline) r g b / 0.35);
+    color: var(--on-surface);
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+.dataTable th:last-child,
+.dataTable td:last-child,
+.dataTable tr:last-child td {
+    border-right: none;
+}
+
+.dataTable tr:last-child td {
+    border-bottom: none;
+}
+
+.dataTable thead th {
+    background: rgb(from var(--primary-fixed) r g b / 0.95);
+    color: var(--on-primary-fixed-variant);
+    font-weight: 800;
+}
+
+.tableShell {
+    padding: 0;
+    overflow: hidden;
+    border-radius: 22px;
+    background: rgb(from var(--surface-bright) r g b / 0.85);
+}
+
+/* Shared actions and buttons */
+.tableActions,
+.actionRowCentered {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.primaryAction,
+.dangerAction,
+.inlineAction,
+.inlineDanger,
+.primaryActionWide {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    border-radius: 999px;
+    font-weight: 700;
+    color: var(--on-primary);
+    text-decoration: none;
+}
+
+.primaryAction,
+.dangerAction {
+    padding: 12px 24px;
+    font-size: 1rem;
+}
+
+.inlineAction,
+.inlineDanger {
+    padding: 10px 16px;
+    font-size: 0.92rem;
+}
+
+.primaryAction,
+.inlineAction,
+.primaryActionWide {
+    background: var(--primary);
+}
+
+.dangerAction,
+.inlineDanger {
+    background: var(--error);
+}
+
+.primaryActionWide {
+    min-width: 280px;
+    padding: 14px 34px;
+    font-size: 1rem;
+}
+
+.actionRowCentered {
+    justify-content: center;
+    margin-top: 40px;
+}
+
+@media (max-width: 1100px) {
+    .pageHeaderRow {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

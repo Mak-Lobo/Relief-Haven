@@ -1,22 +1,35 @@
 import React from "react";
+import {Link, useLocation} from "react-router-dom";
+import {MdPerson} from "react-icons/md";
 import styles from "../styles/skeleton.module.css";
-import {FaPerson} from "react-icons/fa6";
+
+const breadcrumbMap = {
+    "/": "Dashboard",
+    "/shelters": "Shelters",
+    "/shelters/add": "Register Shelter",
+    "/shelters/update": "Update shelter",
+    "/financials": "Financials",
+    "/profile": "Account",
+};
 
 export const Header = () => {
+    const {pathname} = useLocation();
+    const currentPage = breadcrumbMap[pathname] ?? "Dashboard";
+
     return (
         <header>
             <div className={styles.breadcrumbs} aria-label="Breadcrumb">
                 <span>Home</span>
                 <span>/</span>
-                <span>Dashboard</span>
+                <span>{currentPage}</span>
             </div>
 
-            <button className={styles.accountButton} type="button">
+            <Link className={styles.accountButton} to="/profile">
                 <span className={styles.accountText}>
-                    <FaPerson />
+                    <MdPerson/>
                     <span>Mark Njoroge</span>
                 </span>
-            </button>
+            </Link>
         </header>
     );
 };

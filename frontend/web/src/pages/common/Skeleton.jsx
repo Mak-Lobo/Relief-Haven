@@ -1,3 +1,4 @@
+import {Outlet} from "react-router-dom";
 import {Header} from "../../common-components/Header";
 import {Navigation} from "../../common-components/Navigation.jsx";
 import {Footer} from "../../common-components/Footer.jsx";
@@ -10,7 +11,7 @@ const Skeleton = () => {
             <main className={styles.mainLayout}>
                 <Header/>
                 <section className={styles.contentArea}>
-                    <div>Content goes here.</div>
+                    <Outlet/>
                 </section>
                 <Footer/>
             </main>

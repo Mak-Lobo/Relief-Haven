@@ -1,0 +1,112 @@
+/* Dashboard summary cards */
+.metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    justify-content: center;
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.metricCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 22px 20px;
+    border-radius: 14px;
+    background: var(--surface-bright);
+    border: 1px solid rgb(from var(--outline) r g b / 0.15);
+    box-shadow: 0 10px 18px rgb(from var(--shadow) r g b / 0.08);
+}
+
+.metricIcon {
+    font-size: 1.5rem;
+    color: var(--on-surface);
+}
+
+.metricValue {
+    font-size: 1.5rem;
+    color: var(--on-surface);
+}
+
+.metricLabel {
+    color: var(--on-surface-variant);
+    font-size: 1.1rem;
+}
+
+/* Dashboard sections */
+.sectionDivider {
+    height: 2px;
+    background-color: rgb(from var(--outline) r g b / 0.5);
+}
+
+.sectionBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dashboardGrid {
+    display: grid;
+    grid-template-columns: 1.1fr 1.2fr;
+    gap: 18px;
+}
+
+.mapCard,
+.tableCard {
+    padding: 14px;
+    border-radius: 22px;
+    background: rgb(from var(--surface-bright) r g b / 0.85);
+}
+
+/* Dashboard map mock */
+.mapCanvas {
+    position: relative;
+    min-height: 380px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: linear-gradient(90deg, rgb(from var(--outline) r g b / 0.15) 1px, transparent 1px),
+    linear-gradient(rgb(from var(--outline) r g b / 0.15) 1px, transparent 1px),
+    linear-gradient(135deg, #f5f0e6 0%, #efe7d9 100%);
+    background-size: 72px 72px, 72px 72px, auto;
+}
+
+.mapCanvas::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 72% 45%, rgb(from var(--primary-container) r g b / 0.7) 0 13%, transparent 13%),
+    linear-gradient(90deg, transparent 14%, rgb(from var(--secondary-container) r g b / 0.9) 14% 18%, transparent 18%),
+    linear-gradient(25deg, transparent 41%, rgb(from var(--tertiary-container) r g b / 0.9) 41% 45%, transparent 45%);
+    opacity: 0.85;
+}
+
+.mapMarker {
+    position: absolute;
+    left: 71%;
+    top: 44%;
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: var(--error);
+    box-shadow: 0 0 0 8px rgb(from var(--error) r g b / 0.18);
+    z-index: 1;
+}
+
+.mapLabel {
+    position: absolute;
+    left: 63%;
+    top: 51%;
+    z-index: 1;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--on-primary-fixed);
+}
+
+@media (max-width: 1100px) {
+    .metricsGrid,
+    .dashboardGrid {
+        grid-template-columns: 1fr;
+    }
+}

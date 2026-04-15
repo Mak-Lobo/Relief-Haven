@@ -14,10 +14,4 @@ class UsersIn:
     updated_at: datetime
 
 class UsersOut(UsersIn):
-    first_name: str
-    last_name: str
-    email: str
-    phone: int
-    role: str | None
-    created_at: datetime
-    updated_at: datetime
+    pass
