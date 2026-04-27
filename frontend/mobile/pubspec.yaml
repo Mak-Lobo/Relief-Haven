@@ -37,6 +37,8 @@ dependencies:
   flutter_dotenv: any
   supabase_flutter: any
   logger: any
+  flutter_map: ^8.3.0
+  flutter_native_splash: ^2.4.7
 
 
 dev_dependencies:

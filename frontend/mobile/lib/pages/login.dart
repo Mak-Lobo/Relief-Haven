@@ -23,17 +23,18 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Align(
-                    alignment: .topCenter,
+                    alignment: Alignment.topCenter,
                     child: SizedBox(
                       width: 150,
                       height: 150,
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.inversePrimary,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(15)),
                         ),
                         child: Padding(
-                          padding: const .all(5),
+                          padding: const EdgeInsets.all(5),
                           child: Image.asset("assets/images/compass.png"),
                         ),
                       ),
@@ -43,9 +44,9 @@ class LoginScreen extends StatelessWidget {
                   Text(
                     "Welcome back. Login to continue.",
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontWeight: FontWeight(600),
-                    ),
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          fontWeight: FontWeight(600),
+                        ),
                   ),
                 ],
               ),
@@ -68,10 +69,10 @@ class SampleForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: height,
-      padding: const .fromLTRB(20, 50, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 50, 20, 0),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceBright,
-        borderRadius: BorderRadius.all(Radius.circular(15)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
       child: Column(
         children: [
@@ -94,7 +95,7 @@ class SampleForm extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Align(
-                  alignment: .centerEnd,
+                  alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: () {
                       log(
@@ -107,8 +108,8 @@ class SampleForm extends StatelessWidget {
                     child: Text(
                       'Forgot Password?',
                       style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                     ),
                   ),
                 ),
@@ -127,24 +128,29 @@ class SampleForm extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Row(
-                  mainAxisAlignment: .center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       'Already have an account?',
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                     ),
                     const SizedBox(width: 5),
                     GestureDetector(
                       onTap: () {
-                        print("Tapped. Going to login page....");
+                        log(
+                          "Tapped. Going to login page....",
+                          time: DateTime.now(),
+                          name: "Navigation",
+                          level: 1,
+                        );
                       },
                       child: Text(
                         'Sign In',
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                       ),
                     ),
                   ],

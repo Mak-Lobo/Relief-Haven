@@ -22,6 +22,7 @@ class CustomTxtFormFields extends StatelessWidget {
     return TextFormField(
       obscureText: obscureText!,
       obscuringCharacter: '*',
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       decoration: InputDecoration(
         icon: leadingIcon,
         labelText: labelText,

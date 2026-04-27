@@ -31,7 +31,9 @@ class RadioImageContainer<T> extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 color: Theme.of(context).colorScheme.primaryContainer,
               ),
-              child: Image.asset(imageUrl, height: 30, width: 30),
+              child: Center(
+                child: Image.asset(imageUrl, height: 50, width: 50),
+              ),
             ),
           ),
         ],

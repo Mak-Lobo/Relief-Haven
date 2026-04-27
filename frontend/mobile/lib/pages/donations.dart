@@ -7,62 +7,62 @@ class DonationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Donation",
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+    final colors = Theme.of(context).colorScheme;
 
-          centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.primary,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: colors.primary,
+        foregroundColor: colors.onPrimary,
+        title: Text(
+          "Donation",
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const .symmetric(horizontal: 5),
-            child: Column(
-              children: [
-                Align(
-                  alignment: .topCenter,
-                  child: Card(
-                    color: Theme.of(context).colorScheme.surfaceTint,
-                    child: const SizedBox(
-                      width: 250,
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: _DonationHeader(),
-                      ),
+        centerTitle: true,
+        surfaceTintColor: Theme.of(context).colorScheme.primary,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const .symmetric(horizontal: 5),
+          child: Column(
+            children: [
+              Align(
+                alignment: .topCenter,
+                child: Card(
+                  color: Theme.of(context).colorScheme.surfaceTint,
+                  child: const SizedBox(
+                    width: 250,
+                    child: Padding(
+                      padding: .symmetric(horizontal: 10, vertical: 10),
+                      child: _DonationHeader(),
                     ),
                   ),
                 ),
-                const SizedBox(height: 15),
-                MenuItemButton(
-                  leadingIcon: Icon(Icons.edit_document),
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(
-                      Theme.of(context).colorScheme.surfaceContainerHigh,
-                    ),
-                    foregroundColor: WidgetStatePropertyAll(
-                      Theme.of(context).colorScheme.onSurface,
-                    ),
-                    animationDuration: const Duration(milliseconds: 200),
-                    shape: WidgetStatePropertyAll(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+              ),
+              const SizedBox(height: 15),
+              MenuItemButton(
+                leadingIcon: Icon(Icons.edit_document),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(
+                    Theme.of(context).colorScheme.surfaceContainerHigh,
+                  ),
+                  foregroundColor: WidgetStatePropertyAll(
+                    Theme.of(context).colorScheme.onSurface,
+                  ),
+                  animationDuration: const Duration(milliseconds: 200),
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {},
-                  child: const Text("Donate Now"),
                 ),
-                const _DonationForm(),
-                const SizedBox(height: 15),
-              ],
-            ),
+                onPressed: () {},
+                child: const Text("Donate Now"),
+              ),
+              const _DonationForm(),
+              const SizedBox(height: 15),
+            ],
           ),
         ),
       ),
@@ -132,7 +132,7 @@ class _DonationFormState extends State<_DonationForm> {
           children: [
             Text(
               "Select payment option below",
-              style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
@@ -164,7 +164,7 @@ class _DonationFormState extends State<_DonationForm> {
             const SizedBox(height: 15),
             Text(
               "Enter phone number:",
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
@@ -201,7 +201,7 @@ class _DonationFormState extends State<_DonationForm> {
             const SizedBox(height: 10),
             Text(
               "Enter amount (KES)",
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
@@ -211,7 +211,7 @@ class _DonationFormState extends State<_DonationForm> {
             const SizedBox(height: 34),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => print("Donate button pressed"),
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(
                     Theme.of(context).colorScheme.primary,
@@ -219,8 +219,9 @@ class _DonationFormState extends State<_DonationForm> {
                   foregroundColor: WidgetStateProperty.all(
                     Theme.of(context).colorScheme.onPrimary,
                   ),
+                  splashFactory: InkSplash.splashFactory,
                 ),
-                child: Text("Donate"),
+                child: Text("Donate", style: TextStyle(fontWeight: .w500)),
               ),
             ),
             const SizedBox(height: 36),
@@ -228,7 +229,7 @@ class _DonationFormState extends State<_DonationForm> {
             const SizedBox(height: 18),
             Text(
               "Donation History",
-              style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
@@ -263,7 +264,7 @@ class _DonationHistoryCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
       decoration: BoxDecoration(
         color: colors.primaryContainer.withValues(alpha: 0.65),
         borderRadius: BorderRadius.circular(18),
@@ -271,12 +272,13 @@ class _DonationHistoryCard extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
+            flex: 1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   date,
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
                     color: colors.onSurface.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w500,
                   ),
@@ -284,7 +286,7 @@ class _DonationHistoryCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   amount,
-                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     color: colors.onSurface,
                     fontWeight: FontWeight.w500,
                   ),
@@ -293,14 +295,13 @@ class _DonationHistoryCard extends StatelessWidget {
             ),
           ),
           Container(
-            width: 68,
-            height: 68,
+            width: 34,
+            height: 32,
             decoration: BoxDecoration(
               color: colors.primaryContainer,
               shape: BoxShape.circle,
             ),
-            padding: const EdgeInsets.all(12),
-            child: Image.asset(imageUrl),
+            child: Center(child: Image.asset(imageUrl, height: 24, width: 20)),
           ),
         ],
       ),
