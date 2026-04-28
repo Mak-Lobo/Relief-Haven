@@ -8,8 +8,8 @@ class UserIn(BaseModel):
     user_id: UUID
     first_name: str
     last_name: str
-    email_address: str
-    phone_number: int
+    email: str
+    phone: int
     role: str
     county_work: Optional[str] = None
 
@@ -42,7 +42,7 @@ class UserRoleUpdate(BaseModel):
     role_user: str
     county_work: Optional[str] = None
 
-    @field_validator("role")
+    @field_validator("role_user")
     @classmethod
     def role_must_be_valid(cls, v):
         allowed = {"manager", "command", "civilian"}

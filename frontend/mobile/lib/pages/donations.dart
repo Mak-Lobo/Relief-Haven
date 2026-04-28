@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:relief_haven_mobile/common_widgets/custom_input_fields.dart';
 import 'package:relief_haven_mobile/common_widgets/custom_radio_image.dart';
 
@@ -15,26 +16,30 @@ class DonationScreen extends StatelessWidget {
         foregroundColor: colors.onPrimary,
         title: Text(
           "Donation",
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colors.onPrimary,
+          ),
         ),
         centerTitle: true,
-        surfaceTintColor: Theme.of(context).colorScheme.primary,
+        surfaceTintColor: Theme.of(context).colorScheme.surfaceContainerHigh,
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const .symmetric(horizontal: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           child: Column(
             children: [
               Align(
-                alignment: .topCenter,
+                alignment: Alignment.topCenter,
                 child: Card(
                   color: Theme.of(context).colorScheme.surfaceTint,
                   child: const SizedBox(
                     width: 250,
                     child: Padding(
-                      padding: .symmetric(horizontal: 10, vertical: 10),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
+                      ),
                       child: _DonationHeader(),
                     ),
                   ),
@@ -42,7 +47,7 @@ class DonationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 15),
               MenuItemButton(
-                leadingIcon: Icon(Icons.edit_document),
+                leadingIcon: const Icon(Icons.edit_document),
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(
                     Theme.of(context).colorScheme.surfaceContainerHigh,
@@ -77,31 +82,31 @@ class _DonationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Column(
-      mainAxisAlignment: .spaceEvenly,
-      crossAxisAlignment: .start,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "Relief Haven Active Campaign",
-          style: Theme.of(context).textTheme.labelSmall!.copyWith(
-            color: Theme.of(
-              context,
-            ).colorScheme.onPrimary.withValues(alpha: 0.75),
-            fontWeight: FontWeight(600),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: colors.onPrimary.withValues(alpha: 0.75),
+            fontWeight: FontWeight.w600,
           ),
         ),
         Text(
           "Help families affected by the floods.",
-          style: Theme.of(context).textTheme.titleSmall!.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: colors.onPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           "Your donation will go a long way in assisting all displaced people finding some relief in these times of need.\nPlease note that this is completely voluntary and you can choose to donate any amount you wish.",
-          style: Theme.of(context).textTheme.labelSmall!.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
-            fontWeight: FontWeight(600),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: colors.onPrimary,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -132,7 +137,7 @@ class _DonationFormState extends State<_DonationForm> {
           children: [
             Text(
               "Select payment option below",
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
@@ -146,7 +151,9 @@ class _DonationFormState extends State<_DonationForm> {
                   value: PaymentOption.mpesa,
                   groupValue: _selectedPaymentOption,
                   onChanged: (value) {
-                    if (value == null) return;
+                    if (value == null) {
+                      return;
+                    }
                     setState(() => _selectedPaymentOption = value);
                   },
                 ),
@@ -155,7 +162,9 @@ class _DonationFormState extends State<_DonationForm> {
                   value: PaymentOption.airtel,
                   groupValue: _selectedPaymentOption,
                   onChanged: (value) {
-                    if (value == null) return;
+                    if (value == null) {
+                      return;
+                    }
                     setState(() => _selectedPaymentOption = value);
                   },
                 ),
@@ -164,7 +173,7 @@ class _DonationFormState extends State<_DonationForm> {
             const SizedBox(height: 15),
             Text(
               "Enter phone number:",
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
@@ -172,7 +181,7 @@ class _DonationFormState extends State<_DonationForm> {
             const SizedBox(height: 10),
             CustomTxtFormFields(
               hintText: "+254 *** *** ***",
-              enabledField: _useAccountPhoneNumber,
+              enabledField: !_useAccountPhoneNumber,
             ),
             const SizedBox(height: 5),
             Align(
@@ -182,9 +191,9 @@ class _DonationFormState extends State<_DonationForm> {
                 children: [
                   Checkbox(
                     value: _useAccountPhoneNumber,
-                    onChanged: (value) {
+                    onChanged: (_) {
                       setState(() {
-                        _useAccountPhoneNumber = value ?? false;
+                        _useAccountPhoneNumber = !_useAccountPhoneNumber;
                       });
                     },
                     activeColor: colors.primary,
@@ -193,7 +202,7 @@ class _DonationFormState extends State<_DonationForm> {
                     "Use account phone number",
                     style: Theme.of(
                       context,
-                    ).textTheme.labelMedium!.copyWith(color: colors.onSurface),
+                    ).textTheme.labelMedium?.copyWith(color: colors.onSurface),
                   ),
                 ],
               ),
@@ -201,7 +210,7 @@ class _DonationFormState extends State<_DonationForm> {
             const SizedBox(height: 10),
             Text(
               "Enter amount (KES)",
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
@@ -211,17 +220,20 @@ class _DonationFormState extends State<_DonationForm> {
             const SizedBox(height: 34),
             Center(
               child: ElevatedButton(
-                onPressed: () => print("Donate button pressed"),
+                onPressed: () {},
                 style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(
+                  backgroundColor: WidgetStatePropertyAll(
                     Theme.of(context).colorScheme.primary,
                   ),
-                  foregroundColor: WidgetStateProperty.all(
+                  foregroundColor: WidgetStatePropertyAll(
                     Theme.of(context).colorScheme.onPrimary,
                   ),
                   splashFactory: InkSplash.splashFactory,
                 ),
-                child: Text("Donate", style: TextStyle(fontWeight: .w500)),
+                child: const Text(
+                  "Donate",
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
               ),
             ),
             const SizedBox(height: 36),
@@ -229,7 +241,7 @@ class _DonationFormState extends State<_DonationForm> {
             const SizedBox(height: 18),
             Text(
               "Donation History",
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
@@ -248,15 +260,15 @@ class _DonationFormState extends State<_DonationForm> {
 }
 
 class _DonationHistoryCard extends StatelessWidget {
-  final String date;
-  final String amount;
-  final String imageUrl;
-
   const _DonationHistoryCard({
     required this.date,
     required this.amount,
     required this.imageUrl,
   });
+
+  final String date;
+  final String amount;
+  final String imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -272,13 +284,12 @@ class _DonationHistoryCard extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            flex: 1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   date,
-                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: colors.onSurface.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w500,
                   ),
@@ -286,7 +297,7 @@ class _DonationHistoryCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   amount,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: colors.onSurface,
                     fontWeight: FontWeight.w500,
                   ),

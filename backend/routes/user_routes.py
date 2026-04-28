@@ -39,22 +39,13 @@ async def sync_user(user: UserIn, pool=Depends(get_pool)):
                 user.user_id,
                 user.first_name,
                 user.last_name,
-                user.email_address,
-                user.phone_number,
+                user.email,
+                user.phone,
                 user.role,
                 user.county_work
             )
-        return {
-            "user_id": result["user_id"],
-            "first_name": result["first_name"],
-            "last_name": result["last_name"],
-            "email_address": result["email"],  # map
-            "phone_number": result["phone"],  # map
-            "role": result["role_user"],  # map
-            "county_work": result["county_work"],
-            "created_at": result["created_at"],
-            "updated_at": result["updated_at"],
-        }
+        logger.logger.info(f"Synced user: name: {user.first_name} {user.last_name}")
+        return dict(result)
     except Exception as e:
         logger.logger.error(f"Failed to sync user: {e}")
         raise HTTPException(status_code=500, detail="Failed to sync user")

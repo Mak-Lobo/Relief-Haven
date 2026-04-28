@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 
-class CustomTxtFormFields extends StatelessWidget {
-  Icon? leadingIcon;
+class CustomTxtFormFields extends StatefulWidget {
+  final Icon? leadingIcon;
   final String labelText;
   final String hintText;
-  Icon? trailingIcon;
-  bool? obscureText, enabledField;
+  final Icon? trailingIcon;
+  final bool obscureText;
+  final bool enabledField;
+  final TextEditingController? controller;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final String? Function(String?)? validator;
+  final ValueChanged<String>? onChanged;
 
-  CustomTxtFormFields({
+  const CustomTxtFormFields({
     super.key,
     this.leadingIcon,
     this.labelText = "",
@@ -15,20 +21,56 @@ class CustomTxtFormFields extends StatelessWidget {
     this.trailingIcon,
     this.obscureText = false,
     this.enabledField = true,
+    this.controller,
+    this.keyboardType,
+    this.textInputAction,
+    this.validator,
+    this.onChanged,
   });
 
   @override
+  State<CustomTxtFormFields> createState() => _CustomTxtFormFieldsState();
+}
+
+class _CustomTxtFormFieldsState extends State<CustomTxtFormFields> {
+  late bool _obscureText;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final canToggleObscure = widget.obscureText;
+
     return TextFormField(
-      obscureText: obscureText!,
+      controller: widget.controller,
+      keyboardType: widget.keyboardType,
+      textInputAction: widget.textInputAction,
+      validator: widget.validator,
+      onChanged: widget.onChanged,
+      obscureText: _obscureText,
       obscuringCharacter: '*',
       style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       decoration: InputDecoration(
-        icon: leadingIcon,
-        labelText: labelText,
-        hintText: hintText,
-        suffixIcon: trailingIcon,
-        enabled: enabledField!,
+        icon: widget.leadingIcon,
+        labelText: widget.labelText,
+        hintText: widget.hintText,
+        suffixIcon: canToggleObscure
+            ? IconButton(
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+                icon: Icon(
+                  _obscureText ? Icons.visibility : Icons.visibility_off,
+                ),
+              )
+            : widget.trailingIcon,
+        enabled: widget.enabledField,
         hintStyle: TextStyle(
           color: Theme.of(
             context,

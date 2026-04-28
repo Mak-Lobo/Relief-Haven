@@ -1,15 +1,68 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/widget_previews.dart';
-import 'package:relief_haven_mobile/common_widgets/custom_input_fields.dart';
 
-class LoginScreen extends StatelessWidget {
+import 'package:relief_haven_mobile/common_widgets/custom_input_fields.dart';
+import 'package:relief_haven_mobile/pages/registration.dart';
+import 'package:relief_haven_mobile/providers/auth_provider.dart';
+
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    FocusScope.of(context).unfocus();
+
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final success = await ref
+        .read(authProvider.notifier)
+        .signIn(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+
+    if (!mounted || !success) {
+      return;
+    }
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Welcome back.')));
+    Navigator.of(context).pushReplacementNamed('/');
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var header = MediaQuery.sizeOf(context).height * 0.25;
+    final authState = ref.watch(authProvider);
+    final header = MediaQuery.sizeOf(context).height * 0.25125;
+
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      final previousError = previous?.errorMessage;
+      final nextError = next.errorMessage;
+      if (nextError != null && nextError != previousError) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(nextError)));
+      }
+    });
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceTint,
@@ -29,13 +82,16 @@ class LoginScreen extends StatelessWidget {
                       height: 150,
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.inversePrimary,
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(15)),
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(15),
+                          ),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(5),
-                          child: Image.asset("assets/images/compass.png"),
+                          child: Image.asset(
+                            "assets/images/compass_splash.png",
+                          ),
                         ),
                       ),
                     ),
@@ -43,16 +99,23 @@ class LoginScreen extends StatelessWidget {
                   const SizedBox(height: 30),
                   Text(
                     "Welcome back. Login to continue.",
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          fontWeight: FontWeight(600),
-                        ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 10),
-            SampleForm(height: MediaQuery.of(context).size.height - header),
+            const SizedBox(height: 20),
+            _LoginForm(
+              formKey: _formKey,
+              emailController: _emailController,
+              passwordController: _passwordController,
+              height: MediaQuery.of(context).size.height - header,
+              isSubmitting: authState.isSubmitting,
+              onSubmit: _submit,
+            ),
           ],
         ),
       ),
@@ -60,10 +123,22 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-class SampleForm extends StatelessWidget {
-  final double height;
+class _LoginForm extends StatelessWidget {
+  const _LoginForm({
+    required this.formKey,
+    required this.emailController,
+    required this.passwordController,
+    required this.height,
+    required this.isSubmitting,
+    required this.onSubmit,
+  });
 
-  const SampleForm({super.key, required this.height});
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final double height;
+  final bool isSubmitting;
+  final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -72,97 +147,107 @@ class SampleForm extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 50, 20, 0),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceBright,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
       ),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          Form(
-            child: Column(
+      child: Form(
+        key: formKey,
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            CustomTxtFormFields(
+              controller: emailController,
+              leadingIcon: const Icon(Icons.email),
+              labelText: 'Enter email',
+              hintText: 'Email',
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              enabledField: !isSubmitting,
+              validator: (value) {
+                final email = value?.trim() ?? '';
+                if (email.isEmpty) {
+                  return 'Please enter your email.';
+                }
+                if (!email.contains('@')) {
+                  return 'Please enter a valid email address.';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 25),
+            CustomTxtFormFields(
+              controller: passwordController,
+              leadingIcon: const Icon(Icons.lock),
+              labelText: "Enter Password",
+              hintText: "Password",
+              trailingIcon: const Icon(Icons.visibility),
+              obscureText: true,
+              textInputAction: TextInputAction.done,
+              enabledField: !isSubmitting,
+              validator: (value) {
+                if ((value ?? '').isEmpty) {
+                  return 'Please enter your password.';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 5),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                'Forgot Password?',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 50),
+            ElevatedButton(
+              onPressed: isSubmitting ? null : onSubmit,
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(
+                  Theme.of(context).colorScheme.primary,
+                ),
+                foregroundColor: WidgetStatePropertyAll(
+                  Theme.of(context).colorScheme.onPrimary,
+                ),
+              ),
+              child: Text(isSubmitting ? "Signing In..." : "Sign In"),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CustomTxtFormFields(
-                  leadingIcon: Icon(Icons.email),
-                  labelText: 'Enter email',
-                  hintText: 'Email',
-                ),
-                const SizedBox(height: 25),
-                CustomTxtFormFields(
-                  leadingIcon: Icon(Icons.lock),
-                  labelText: "Enter Password",
-                  hintText: "Password",
-                  trailingIcon: Icon(Icons.visibility),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 5),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: () {
-                      log(
-                        "Tapped ",
-                        time: DateTime.now(),
-                        name: "Forgot Password",
-                        level: 1,
-                      );
-                    },
-                    child: Text(
-                      'Forgot Password?',
-                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                    ),
+                Text(
+                  'Need an account?',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 50),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(
-                      Theme.of(context).colorScheme.primary,
-                    ),
-                    foregroundColor: WidgetStateProperty.all(
-                      Theme.of(context).colorScheme.onPrimary,
+                const SizedBox(width: 5),
+                GestureDetector(
+                  onTap: isSubmitting
+                      ? null
+                      : () {
+                          Navigator.of(
+                            context,
+                          ).pushReplacementNamed('/registration');
+                        },
+                  child: Text(
+                    'Sign Up',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                  child: Text("Sign In"),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already have an account?',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                    ),
-                    const SizedBox(width: 5),
-                    GestureDetector(
-                      onTap: () {
-                        log(
-                          "Tapped. Going to login page....",
-                          time: DateTime.now(),
-                          name: "Navigation",
-                          level: 1,
-                        );
-                      },
-                      child: Text(
-                        'Sign In',
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 @Preview(name: 'Login Screen')
-Widget loginScreenPreview() => const LoginScreen();
+Widget loginScreenPreview() =>
+    const ProviderScope(child: MaterialApp(home: LoginScreen()));

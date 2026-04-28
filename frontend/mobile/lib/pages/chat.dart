@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:relief_haven_mobile/providers/auth_provider.dart';
 import 'package:relief_haven_mobile/utils/elevated_button.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends ConsumerWidget {
   const ChatScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    final displayName = ref.watch(authProvider).displayName;
+    final firstName = displayName.trim().split(RegExp(r'\s+')).first;
 
     return Scaffold(
       appBar: AppBar(
@@ -17,67 +21,37 @@ class ChatScreen extends StatelessWidget {
         foregroundColor: colors.onPrimary,
         title: Text(
           "HavenBot",
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colors.onPrimary,
+          ),
         ),
         centerTitle: true,
-        surfaceTintColor: Theme.of(context).colorScheme.primary,
+        surfaceTintColor: Theme.of(context).colorScheme.surfaceContainerHigh,
       ),
       body: SafeArea(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(
-              child: Column(
-                mainAxisAlignment: .spaceAround,
-                children: [_WelcomeCopy(), const _PromptCard()],
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _WelcomeCopy(firstName: firstName),
+                const _PromptCard(),
+              ],
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ChatHeader extends StatelessWidget {
-  const _ChatHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      width: double.infinity,
-      height: 118,
-      color: colors.primary,
-      padding: const EdgeInsets.symmetric(horizontal: 22),
-      child: Row(
-        children: [
-          Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: colors.onPrimary,
-            size: 34,
-          ),
-          const SizedBox(width: 18),
-          Text(
-            'HavenBot',
-            style: textTheme.headlineMedium?.copyWith(
-              color: colors.onPrimary,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          const Spacer(),
-          Icon(Icons.menu_rounded, color: colors.onPrimary, size: 40),
-        ],
       ),
     );
   }
 }
 
 class _WelcomeCopy extends StatelessWidget {
+  const _WelcomeCopy({required this.firstName});
+
+  final String firstName;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -86,7 +60,7 @@ class _WelcomeCopy extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'Welcome, Mark, to HavenBot.',
+          'Welcome, $firstName, to HavenBot.',
           textAlign: TextAlign.center,
           style: textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w400,
@@ -95,7 +69,7 @@ class _WelcomeCopy extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          'How can we be of service to you?🙂',
+          'How can we be of service to you today?',
           textAlign: TextAlign.center,
           style: textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w400,
@@ -117,7 +91,7 @@ class _PromptCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const .all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(25),
@@ -159,18 +133,20 @@ Widget chatScreenPreview() {
 }
 
 Widget _buildPreviewApp(Widget child) {
-  return MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF0277BD),
+  return ProviderScope(
+    child: MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0277BD),
+          brightness: Brightness.light,
+        ),
         brightness: Brightness.light,
+        useMaterial3: true,
+        textTheme: GoogleFonts.dmSansTextTheme(),
+        elevatedButtonTheme: customElevatedBtnTheme,
       ),
-      brightness: Brightness.light,
-      useMaterial3: true,
-      textTheme: GoogleFonts.dmSansTextTheme(),
-      elevatedButtonTheme: customElevatedBtnTheme,
+      home: child,
     ),
-    home: child,
   );
 }

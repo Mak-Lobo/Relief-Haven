@@ -1,34 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:relief_haven_mobile/providers/auth_provider.dart';
 import 'package:relief_haven_mobile/utils/elevated_button.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    final displayName = ref.watch(authProvider).displayName;
+    final firstName = displayName.trim().split(RegExp(r'\s+')).first;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: colors.primary,
         foregroundColor: colors.onPrimary,
         title: Text(
-          "Welcome Mark",
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+          "Welcome $firstName",
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colors.onPrimary,
+          ),
         ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.notifications_none_rounded),
+            icon: const Icon(Icons.notifications_none_rounded),
           ),
         ],
         centerTitle: true,
-        surfaceTintColor: Theme.of(context).colorScheme.primary,
+        surfaceTintColor: Theme.of(context).colorScheme.surfaceContainerHigh,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -70,14 +75,16 @@ class HomeScreen extends StatelessWidget {
                         size: 34,
                       ),
                       const SizedBox(width: 12),
-                      Text(
-                        'Send location to responders',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              color: colors.onError,
-                              fontWeight: FontWeight.w700,
-                            ),
+                      Expanded(
+                        child: Text(
+                          'Send location to responders',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: colors.onError,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
                       ),
                     ],
                   ),
@@ -85,43 +92,6 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HomeHeader extends StatelessWidget {
-  const _HomeHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      height: 100,
-      width: double.infinity,
-      color: colors.primary,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 22),
-        child: Row(
-          children: [
-            const Spacer(),
-            Text(
-              'Welcome,Mark',
-              style: textTheme.headlineMedium?.copyWith(
-                color: colors.onPrimary,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            const Spacer(),
-            Icon(
-              Icons.notifications_none_rounded,
-              color: colors.onPrimary,
-              size: 30,
-            ),
           ],
         ),
       ),
@@ -217,14 +187,14 @@ class _ShelterSection extends StatelessWidget {
 
     const shelters = [
       ('0.5km', 'Thika Stadium'),
-      ('0.5km', 'Thika Stadium'),
-      ('0.5km', 'Thika Stadium'),
-      ('0.5km', 'Thika Stadium'),
+      ('0.8km', 'Blue Post Shelter'),
+      ('1.1km', 'Landless Hall'),
+      ('1.5km', 'County Safe Point'),
     ];
 
     return Container(
       width: double.infinity,
-      padding: const .only(left: 18, right: 18, top: 20),
+      padding: const EdgeInsets.only(left: 18, right: 18, top: 20),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(34),
@@ -258,6 +228,7 @@ class _ShelterSection extends StatelessWidget {
                 child: Divider(height: 24, thickness: 1),
               ),
           ],
+          const SizedBox(height: 18),
         ],
       ),
     );
@@ -265,10 +236,10 @@ class _ShelterSection extends StatelessWidget {
 }
 
 class _ShelterCard extends StatelessWidget {
+  const _ShelterCard({required this.distance, required this.name});
+
   final String distance;
   final String name;
-
-  const _ShelterCard({required this.distance, required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +247,7 @@ class _ShelterCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      padding: const .symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
         color: colors.primaryContainer,
         borderRadius: BorderRadius.circular(20),
@@ -289,14 +260,14 @@ class _ShelterCard extends StatelessWidget {
               children: [
                 Text(
                   distance,
-                  style: textTheme.labelMedium!.copyWith(
+                  style: textTheme.labelMedium?.copyWith(
                     color: colors.onPrimaryContainer,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   name,
-                  style: textTheme.bodyLarge!.copyWith(
+                  style: textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colors.onPrimaryContainer,
                   ),
@@ -306,7 +277,7 @@ class _ShelterCard extends StatelessWidget {
           ),
           Container(
             width: 30,
-            padding: .all(5),
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: colors.inversePrimary,
               shape: BoxShape.circle,
@@ -325,18 +296,20 @@ Widget homeScreenPreview() {
 }
 
 Widget _buildPreviewApp(Widget child) {
-  return MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF0277BD),
+  return ProviderScope(
+    child: MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0277BD),
+          brightness: Brightness.light,
+        ),
         brightness: Brightness.light,
+        useMaterial3: true,
+        textTheme: GoogleFonts.dmSansTextTheme(),
+        elevatedButtonTheme: customElevatedBtnTheme,
       ),
-      brightness: Brightness.light,
-      useMaterial3: true,
-      textTheme: GoogleFonts.dmSansTextTheme(),
-      elevatedButtonTheme: customElevatedBtnTheme,
+      home: child,
     ),
-    home: child,
   );
 }

@@ -31,10 +31,13 @@ dependencies:
   flutter_riverpod: any
   shared_preferences: any
   google_fonts: ^8.0.2
+  get_it: any
   shimmer: any
   connectivity_plus: any
   intl: any
   flutter_dotenv: any
+  geolocator_android: any
+  geolocator_apple: any
   supabase_flutter: any
   logger: any
   flutter_map: ^8.3.0
@@ -57,3 +60,20 @@ flutter:
 
   assets:
     - assets/images/
+    - .env
+
+flutter_native_splash:
+  android: true
+  ios: true
+  fullscreen: true
+
+  color: '#31628D'
+  image: 'assets/images/compass_dark.png'
+  color_dark: '#9DCBFB'
+  image_dark: 'assets/images/compass_splash.png'
+
+  android_12:
+    image: 'assets/images/compass_dark.png'
+    image_dark: 'assets/images/compass_splash.png'
+    color: '#31228D'
+    color_dark: '#9DCBFB'

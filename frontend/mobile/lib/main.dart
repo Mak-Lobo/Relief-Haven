@@ -1,19 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logger/logger.dart';
+import 'package:relief_haven_mobile/pages/registration.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:relief_haven_mobile/pages/chat.dart';
 import 'package:relief_haven_mobile/pages/donations.dart';
 import 'package:relief_haven_mobile/pages/home.dart';
+import 'package:relief_haven_mobile/pages/login.dart';
 import 'package:relief_haven_mobile/pages/profile.dart';
+import 'package:relief_haven_mobile/providers/auth_provider.dart';
+import 'package:relief_haven_mobile/services/requests/base.dart';
 import 'package:relief_haven_mobile/utils/elevated_button.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+
+  final logger = Logger();
+  final base = Base();
+  final url = dotenv.env['SUPABASE_URL']!;
+  final anonKey = dotenv.env['SUPABASE_ANON_KEY']!;
+
+  await Supabase.initialize(url: url, anonKey: anonKey);
+  logger.d('Supabase initialized');
+  logger.i('Backend URL: ${base.baseURL}');
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -40,8 +60,31 @@ class MyApp extends StatelessWidget {
         elevatedButtonTheme: customElevatedBtnTheme,
       ),
       themeMode: .light,
-      home: const AppShell(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/registration': (context) => const RegistrationScreen(),
+      },
+      home: const AuthGate(),
     );
+  }
+}
+
+class AuthGate extends ConsumerWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+
+    if (authState.isInitializing) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (!authState.isAuthenticated) {
+      return const LoginScreen();
+    }
+
+    return const AppShell();
   }
 }
 
