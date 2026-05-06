@@ -1,10 +1,11 @@
 import React, {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import styles from "./../../styles/auth.module.css";
-import {signInUser} from "../../services/auth/SignIn";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 export const Login = () => {
     const navigate = useNavigate();
+    const {signIn} = useAuth();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -33,7 +34,7 @@ export const Login = () => {
         }
 
         setIsSubmitting(true);
-        const result = await signInUser({email, password});
+        const result = await signIn({email, password});
         setIsSubmitting(false);
 
         if (!result.success) {

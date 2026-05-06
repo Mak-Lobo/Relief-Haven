@@ -1,21 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:relief_haven_mobile/common_widgets/custom_input_fields.dart';
 import 'package:relief_haven_mobile/common_widgets/custom_radio_image.dart';
+import 'package:relief_haven_mobile/models/donation_model.dart';
+import 'package:relief_haven_mobile/providers/auth_provider.dart';
+import 'package:relief_haven_mobile/providers/donation_provider.dart';
+import 'package:relief_haven_mobile/services/requests/base.dart';
+import 'package:relief_haven_mobile/services/requests/donation_request.dart';
+import 'package:toastification/toastification.dart';
 
-class DonationScreen extends StatelessWidget {
+import '../common_widgets/donation_header.dart';
+
+class DonationScreen extends ConsumerStatefulWidget {
   const DonationScreen({super.key});
+
+  @override
+  ConsumerState<DonationScreen> createState() => _DonationScreenState();
+}
+
+class _DonationScreenState extends ConsumerState<DonationScreen> {
+  final _formAnchorKey = GlobalKey();
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final donationsAsync = ref.watch(donationHistoryProvider);
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: colors.primary,
         foregroundColor: colors.onPrimary,
         title: Text(
-          "Donation",
+          'Donation',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: colors.onPrimary,
@@ -40,7 +63,7 @@ class DonationScreen extends StatelessWidget {
                         horizontal: 10,
                         vertical: 10,
                       ),
-                      child: _DonationHeader(),
+                      child: DonationHeader(),
                     ),
                   ),
                 ),
@@ -63,9 +86,81 @@ class DonationScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {},
-                child: const Text("Donate Now"),
+                child: const Text('Donate Now'),
               ),
-              const _DonationForm(),
+              Container(key: _formAnchorKey, child: const _DonationForm()),
+              const SizedBox(height: 15),
+              Divider(color: colors.outlineVariant, height: 1),
+              const SizedBox(height: 18),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Donation History',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: colors.onSurface,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: donationsAsync.when(
+                  loading: () => const CircularProgressIndicator.adaptive(),
+                  error: (error, _) => Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colors.errorContainer.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _friendlyErrorText(error),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: colors.onErrorContainer),
+                        ),
+                        const SizedBox(height: 12),
+                        TextButton(
+                          onPressed: () =>
+                              ref.invalidate(donationHistoryProvider),
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  data: (donations) {
+                    if (donations.isEmpty) {
+                      return Center(
+                        child: Text(
+                          "Your donations will appear after successful submissions.",
+                          style: TextStyle(color: colors.onSurfaceVariant),
+                        ),
+                      );
+                    }
+
+                    return Column(
+                      children: donations
+                          .map(
+                            (donation) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _DonationHistoryCard(donation: donation),
+                            ),
+                          )
+                          .toList(),
+                    );
+                  },
+                ),
+              ),
               const SizedBox(height: 15),
             ],
           ),
@@ -77,66 +172,180 @@ class DonationScreen extends StatelessWidget {
 
 enum PaymentOption { mpesa, airtel }
 
-class _DonationHeader extends StatelessWidget {
-  const _DonationHeader();
+extension PaymentOptionX on PaymentOption {
+  String get displayLabel {
+    switch (this) {
+      case PaymentOption.mpesa:
+        return 'M-Pesa';
+      case PaymentOption.airtel:
+        return 'Airtel Money';
+    }
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+  String get apiValue {
+    switch (this) {
+      case PaymentOption.mpesa:
+        return 'mpesa';
+      case PaymentOption.airtel:
+        return 'airtel_money';
+    }
+  }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Relief Haven Active Campaign",
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: colors.onPrimary.withValues(alpha: 0.75),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        Text(
-          "Help families affected by the floods.",
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: colors.onPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          "Your donation will go a long way in assisting all displaced people finding some relief in these times of need.\nPlease note that this is completely voluntary and you can choose to donate any amount you wish.",
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: colors.onPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
+  String get assetPath {
+    switch (this) {
+      case PaymentOption.mpesa:
+        return 'assets/images/mpesa.png';
+      case PaymentOption.airtel:
+        return 'assets/images/airtel money.png';
+    }
   }
 }
 
-class _DonationForm extends StatefulWidget {
+class _DonationForm extends ConsumerStatefulWidget {
   const _DonationForm();
 
   @override
-  State<_DonationForm> createState() => _DonationFormState();
+  ConsumerState<_DonationForm> createState() => _DonationFormState();
 }
 
-class _DonationFormState extends State<_DonationForm> {
+class _DonationFormState extends ConsumerState<_DonationForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _phoneController = TextEditingController();
+  final _amountController = TextEditingController();
+  final _donationRequest = DonationRequest();
+
   PaymentOption _selectedPaymentOption = PaymentOption.mpesa;
   bool _useAccountPhoneNumber = true;
+  bool _isSubmitting = false;
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    FocusScope.of(context).unfocus();
+
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+
+    final authState = ref.read(authProvider);
+    final profilePhone = authState.profile?.phone;
+    final rawAmount = _amountController.text.trim().replaceAll(',', '');
+    final amount = double.tryParse(rawAmount);
+
+    if (amount == null || amount <= 0) {
+      toastification.show(
+        type: .warning,
+        style: .flatColored,
+        description: Text('Please enter a valid donation amount.'),
+        icon: const Icon(Icons.warning),
+      );
+      return;
+    }
+
+    int? phoneNumber;
+    if (_useAccountPhoneNumber) {
+      phoneNumber = profilePhone;
+      if (phoneNumber == null) {
+        toastification.show(
+          type: .warning,
+          style: .flatColored,
+          description: Text('Your account phone number is not available yet.'),
+          icon: const Icon(Icons.warning),
+        );
+
+        return;
+      }
+    } else {
+      phoneNumber = int.tryParse(_phoneController.text.trim());
+
+      if (phoneNumber == null) {
+        toastification.show(
+          type: .warning,
+          style: .flatColored,
+          description: Text('Please enter a valid phone number.'),
+          icon: const Icon(Icons.warning),
+        );
+        return;
+      }
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      await _donationRequest.initiateDonation(
+        request: DonationInitiateRequest(
+          amountKes: amount,
+          paymentService: _selectedPaymentOption.apiValue,
+          phone: phoneNumber,
+        ),
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      _amountController.clear();
+      if (!_useAccountPhoneNumber) {
+        _phoneController.clear();
+      }
+
+      ref.invalidate(donationHistoryProvider);
+
+      toastification.show(
+        type: .success,
+        style: .flatColored,
+        description: Text('Donation successful.'),
+        icon: const Icon(Icons.thumb_up),
+      );
+    } on RequestException catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      toastification.show(
+        type: .error,
+        style: .flatColored,
+        description: Text('Donation failed: $error'),
+        icon: const Icon(Icons.error),
+        autoCloseDuration: const Duration(milliseconds: 2500),
+      );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      toastification.show(
+        type: .error,
+        style: .flatColored,
+        description: Text('Unable to process donation: $error'),
+        icon: const Icon(Icons.error),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final authState = ref.watch(authProvider);
 
     return Form(
+      key: _formKey,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Select payment option below",
+              'Select payment option below',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
@@ -147,22 +356,22 @@ class _DonationFormState extends State<_DonationForm> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 RadioImageContainer<PaymentOption>(
-                  imageUrl: "assets/images/mpesa.png",
+                  imageUrl: PaymentOption.mpesa.assetPath,
                   value: PaymentOption.mpesa,
                   groupValue: _selectedPaymentOption,
                   onChanged: (value) {
-                    if (value == null) {
+                    if (value == null || _isSubmitting) {
                       return;
                     }
                     setState(() => _selectedPaymentOption = value);
                   },
                 ),
                 RadioImageContainer<PaymentOption>(
-                  imageUrl: "assets/images/airtel money.png",
+                  imageUrl: PaymentOption.airtel.assetPath,
                   value: PaymentOption.airtel,
                   groupValue: _selectedPaymentOption,
                   onChanged: (value) {
-                    if (value == null) {
+                    if (value == null || _isSubmitting) {
                       return;
                     }
                     setState(() => _selectedPaymentOption = value);
@@ -172,7 +381,7 @@ class _DonationFormState extends State<_DonationForm> {
             ),
             const SizedBox(height: 15),
             Text(
-              "Enter phone number:",
+              'Enter phone number:',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
@@ -180,8 +389,25 @@ class _DonationFormState extends State<_DonationForm> {
             ),
             const SizedBox(height: 10),
             CustomTxtFormFields(
-              hintText: "+254 *** *** ***",
-              enabledField: !_useAccountPhoneNumber,
+              controller: _phoneController,
+              hintText: '+254 *** *** ***',
+              enabledField: !_useAccountPhoneNumber && !_isSubmitting,
+              keyboardType: TextInputType.phone,
+              textInputAction: TextInputAction.next,
+              validator: (value) {
+                if (_useAccountPhoneNumber) {
+                  return null;
+                }
+
+                final phone = value?.trim() ?? '';
+                if (phone.isEmpty) {
+                  return 'Please enter the phone number to use.';
+                }
+                if (!RegExp(r'^\d{8,15}$').hasMatch(phone)) {
+                  return 'Enter a valid phone number with digits only.';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 5),
             Align(
@@ -191,15 +417,19 @@ class _DonationFormState extends State<_DonationForm> {
                 children: [
                   Checkbox(
                     value: _useAccountPhoneNumber,
-                    onChanged: (_) {
-                      setState(() {
-                        _useAccountPhoneNumber = !_useAccountPhoneNumber;
-                      });
-                    },
+                    onChanged: _isSubmitting
+                        ? null
+                        : (value) {
+                            setState(() {
+                              _useAccountPhoneNumber = value ?? false;
+                            });
+                          },
                     activeColor: colors.primary,
                   ),
                   Text(
-                    "Use account phone number",
+                    authState.profile?.phone != null
+                        ? 'Use account phone number'
+                        : 'Use account phone number (not set)',
                     style: Theme.of(
                       context,
                     ).textTheme.labelMedium?.copyWith(color: colors.onSurface),
@@ -209,18 +439,39 @@ class _DonationFormState extends State<_DonationForm> {
             ),
             const SizedBox(height: 10),
             Text(
-              "Enter amount (KES)",
+              'Enter amount (KES)',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 10),
-            CustomTxtFormFields(hintText: "Amount"),
+            CustomTxtFormFields(
+              controller: _amountController,
+              hintText: 'Amount',
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              textInputAction: TextInputAction.done,
+              enabledField: !_isSubmitting,
+              validator: (value) {
+                final rawAmount = value?.trim().replaceAll(',', '') ?? '';
+                if (rawAmount.isEmpty) {
+                  return 'Please enter the donation amount.';
+                }
+
+                final amount = double.tryParse(rawAmount);
+                if (amount == null || amount <= 0) {
+                  return 'Please enter a valid amount.';
+                }
+
+                return null;
+              },
+            ),
             const SizedBox(height: 34),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: _isSubmitting ? null : _submit,
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(
                     Theme.of(context).colorScheme.primary,
@@ -230,27 +481,11 @@ class _DonationFormState extends State<_DonationForm> {
                   ),
                   splashFactory: InkSplash.splashFactory,
                 ),
-                child: const Text(
-                  "Donate",
-                  style: TextStyle(fontWeight: FontWeight.w500),
+                child: Text(
+                  _isSubmitting ? 'Submitting...' : 'Donate',
+                  style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
               ),
-            ),
-            const SizedBox(height: 36),
-            Divider(color: colors.outlineVariant, height: 1),
-            const SizedBox(height: 18),
-            Text(
-              "Donation History",
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: colors.onSurface,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 18),
-            const _DonationHistoryCard(
-              date: "30-April-2026",
-              amount: "KES 2000",
-              imageUrl: "assets/images/airtel money.png",
             ),
           ],
         ),
@@ -260,15 +495,9 @@ class _DonationFormState extends State<_DonationForm> {
 }
 
 class _DonationHistoryCard extends StatelessWidget {
-  const _DonationHistoryCard({
-    required this.date,
-    required this.amount,
-    required this.imageUrl,
-  });
+  const _DonationHistoryCard({required this.donation});
 
-  final String date;
-  final String amount;
-  final String imageUrl;
+  final DonationModel donation;
 
   @override
   Widget build(BuildContext context) {
@@ -288,7 +517,15 @@ class _DonationHistoryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  date,
+                  _paymentLabelForService(donation.paymentService),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: colors.onSurface.withValues(alpha: 0.8),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  donation.formattedDate,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: colors.onSurface.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w500,
@@ -296,7 +533,7 @@ class _DonationHistoryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  amount,
+                  donation.formattedAmount,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: colors.onSurface,
                     fontWeight: FontWeight.w500,
@@ -312,10 +549,36 @@ class _DonationHistoryCard extends StatelessWidget {
               color: colors.primaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Center(child: Image.asset(imageUrl, height: 24, width: 20)),
+            child: Center(
+              child: Image.asset(
+                _paymentAssetForService(donation.paymentService),
+                height: 24,
+                width: 20,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 }
+
+String _paymentAssetForService(String paymentService) {
+  final normalized = paymentService.trim().toLowerCase();
+  if (normalized.contains('airtel')) {
+    return PaymentOption.airtel.assetPath;
+  }
+  return PaymentOption.mpesa.assetPath;
+}
+
+String _paymentLabelForService(String paymentService) {
+  final normalized = paymentService.trim().toLowerCase();
+  if (normalized.contains('airtel')) {
+    return PaymentOption.airtel.displayLabel;
+  }
+  return PaymentOption.mpesa.displayLabel;
+}
+
+String _friendlyErrorText(Object error) => error is RequestException
+    ? error.message
+    : 'Unable to load your donation history right now.';

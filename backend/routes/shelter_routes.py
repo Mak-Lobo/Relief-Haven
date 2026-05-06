@@ -32,6 +32,15 @@ async def get_active_shelters(pool=Depends(get_pool)):
     return [dict(row) for row in result]
 
 
+@router.get("/{county}", response_model=List[ShelterOut])
+async def get_shelters_by_county(county: str, pool=Depends(get_pool)):
+    """Get shelters by county."""
+    query = "SELECT * FROM haven_get_shelters_by_county($1)"
+    async with pool.acquire() as conn:
+        result = await conn.fetch(query, county)
+    return [dict(row) for row in result]
+
+
 @router.get("/{shelter_id}", response_model=ShelterOut)
 async def get_shelter_by_id(shelter_id: UUID, pool=Depends(get_pool)):
     """Get a single shelter by ID."""
@@ -54,7 +63,7 @@ async def is_shelter_full(shelter_id: UUID, pool=Depends(get_pool)):
     return dict(result)
 
 
-@router.post("/", response_model=ShelterOut)
+@router.post("/add", response_model=ShelterOut)
 async def create_shelter(shelter: ShelterIn, pool=Depends(get_pool)):
     """Add a new shelter."""
     query = "SELECT * FROM haven_create_shelter($1, $2, $3, $4, $5)"

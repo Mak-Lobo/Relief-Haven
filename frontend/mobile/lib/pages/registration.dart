@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:relief_haven_mobile/common_widgets/custom_input_fields.dart';
 import 'package:relief_haven_mobile/providers/auth_provider.dart';
+import 'package:toastification/toastification.dart';
 
 class RegistrationScreen extends ConsumerStatefulWidget {
   const RegistrationScreen({super.key});
@@ -53,9 +54,6 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Account created successfully.')),
-    );
     Navigator.of(context).pushReplacementNamed('/login');
   }
 

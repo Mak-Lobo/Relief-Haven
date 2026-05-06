@@ -155,7 +155,6 @@ const Registration = () => {
                             </option>
                             <option value="manager">Manager</option>
                             <option value="command">Command</option>
-                            <option value="civilian">Civilian</option>
                         </select>
 
                         <select

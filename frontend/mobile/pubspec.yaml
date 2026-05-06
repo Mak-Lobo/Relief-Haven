@@ -36,11 +36,15 @@ dependencies:
   connectivity_plus: any
   intl: any
   flutter_dotenv: any
+  geolocator: any
   geolocator_android: any
   geolocator_apple: any
   supabase_flutter: any
   logger: any
   flutter_map: ^8.3.0
+  flutter_map_animations: any
+  latlong2: any
+  toastification: any
   flutter_native_splash: ^2.4.7
 
 

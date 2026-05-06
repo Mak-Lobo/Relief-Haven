@@ -6,6 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:relief_haven_mobile/providers/auth_provider.dart';
 import 'package:relief_haven_mobile/utils/elevated_button.dart';
 
+import '../common_widgets/custom_drawer.dart';
+import '../common_widgets/map.dart';
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -34,7 +37,18 @@ class HomeScreen extends ConsumerWidget {
         ],
         centerTitle: true,
         surfaceTintColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
       ),
+      drawer: AppDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,14 +59,17 @@ class HomeScreen extends ConsumerWidget {
               child: _SearchBar(),
             ),
             const SizedBox(height: 10),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: _MapPlaceholder(),
-            ),
-            const SizedBox(height: 15),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: _ShelterSection(),
+            Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(height: 350, child: UserMap()),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 300, left: 20, right: 20),
+                  child: _ShelterSection(),
+                ),
+              ],
             ),
             const SizedBox(height: 15),
             Center(
@@ -131,52 +148,6 @@ class _SearchBar extends StatelessWidget {
   }
 }
 
-class _MapPlaceholder extends StatelessWidget {
-  const _MapPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return SizedBox(
-      height: 150,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerHighest,
-            border: Border.all(color: colors.outlineVariant),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.map_outlined, size: 72, color: colors.primary),
-                const SizedBox(height: 16),
-                Text(
-                  'Map Placeholder',
-                  style: textTheme.titleLarge?.copyWith(
-                    color: colors.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Shelter map will be added here.',
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _ShelterSection extends StatelessWidget {
   const _ShelterSection();
 
@@ -206,6 +177,7 @@ class _ShelterSection extends StatelessWidget {
               Text(
                 'Nearest shelters',
                 style: textTheme.headlineSmall?.copyWith(
+                  color: colors.primary,
                   fontWeight: FontWeight.w500,
                 ),
               ),

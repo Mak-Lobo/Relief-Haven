@@ -99,6 +99,12 @@
     font-weight: 500;
 }
 
+.accountLink {
+    display: inline-block;
+    align-items: center;
+    justify-items: center;
+}
+
 .accountButton {
     display: inline-flex;
     align-items: center;
@@ -109,6 +115,33 @@
     background-color: var(--surface-bright);
     color: var(--on-surface);
 }
+
+.accountSignOut {
+    display: none;
+    color: white;
+    background-color: var(--error);
+    position: absolute;
+    border: solid 1px var(--surface-variant);
+    border-radius: 10px;
+    padding: 0.5rem;
+    font-size: 1.25em;
+    transition-duration: 800ms;
+
+}
+
+.accountSignOut span {
+    font-weight: 700;
+}
+
+.accountLink:hover .accountSignOut {
+    display: flex;
+    align-self: center;
+    align-items: center;
+    margin-left: 5px;
+    transition-duration: 800ms;
+    transition-property: background-color;
+}
+
 
 .accountText {
     display: flex;

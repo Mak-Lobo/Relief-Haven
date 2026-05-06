@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/widget_previews.dart';
 
 import 'package:relief_haven_mobile/common_widgets/custom_input_fields.dart';
-import 'package:relief_haven_mobile/pages/registration.dart';
 import 'package:relief_haven_mobile/providers/auth_provider.dart';
+import 'package:toastification/toastification.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -53,19 +53,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final header = MediaQuery.sizeOf(context).height * 0.25125;
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     ref.listen<AuthState>(authProvider, (previous, next) {
       final previousError = previous?.errorMessage;
       final nextError = next.errorMessage;
       if (nextError != null && nextError != previousError) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text(nextError)));
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          title: Text("Login Error"),
+          description: Text(nextError),
+          icon: const Icon(Icons.error_outline_rounded),
+          style: ToastificationStyle.flatColored,
+          alignment: Alignment.bottomCenter,
+          backgroundColor: colorScheme.error,
+          foregroundColor: colorScheme.onError,
+        );
       }
     });
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+      backgroundColor: colorScheme.surfaceTint,
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         child: Column(
@@ -76,19 +86,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: Column(
                 children: [
                   Align(
-                    alignment: Alignment.topCenter,
+                    alignment: .topCenter,
                     child: SizedBox(
                       width: 150,
                       height: 150,
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(15),
-                          ),
+                          color: colorScheme.primaryContainer,
+                          borderRadius: const BorderRadius.all(.circular(15)),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(5),
+                          padding: const .all(5),
                           child: Image.asset(
                             "assets/images/compass_splash.png",
                           ),
@@ -99,8 +107,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 30),
                   Text(
                     "Welcome back. Login to continue.",
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimary,
+                    style: textTheme.titleLarge?.copyWith(
+                      color: colorScheme.onPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -142,11 +150,14 @@ class _LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       height: height,
       padding: const EdgeInsets.fromLTRB(20, 50, 20, 0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceBright,
+        color: colorScheme.surfaceBright,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
       ),
       child: Form(
@@ -234,8 +245,8 @@ class _LoginForm extends StatelessWidget {
                         },
                   child: Text(
                     'Sign Up',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.primary,
                     ),
                   ),
                 ),
@@ -248,6 +259,6 @@ class _LoginForm extends StatelessWidget {
   }
 }
 
-@Preview(name: 'Login Screen')
-Widget loginScreenPreview() =>
-    const ProviderScope(child: MaterialApp(home: LoginScreen()));
+// @Preview(name: 'Login Screen')
+// Widget loginScreenPreview() =>
+//     const ProviderScope(child: MaterialApp(home: LoginScreen()));

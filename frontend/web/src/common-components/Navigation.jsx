@@ -1,10 +1,13 @@
 import {NavLink} from "react-router-dom";
-import {MdDashboard, MdHome, MdMessage, MdMoney} from "react-icons/md";
+import {MdDashboard, MdHome, MdMessage, MdMoney, MdLogout} from "react-icons/md";
 import compass from "../assets/compass.png";
 import styles from "../styles/skeleton.module.css";
 import "../App.css";
+import {useAuth} from "../context/AuthContext.jsx";
 
 export const Navigation = () => {
+
+
     return (
         <aside className={styles["navBlock"]}>
             <div className={styles.logo}>

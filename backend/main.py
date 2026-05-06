@@ -4,8 +4,11 @@ import asyncpg
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from database import connect_db, disconnect_db, get_pool
+
 from routes.user_routes import router as user_router
 from routes.shelter_routes import router as shelter_router
+from routes.donation_routes import router as donation_router
+from daraja_sdk import fastapi as daraja
 
 origins = [
     'http://localhost:8000',
@@ -26,6 +29,8 @@ app = FastAPI(title="Relief Haven API", lifespan=lifespan)
 
 app.include_router(user_router)
 app.include_router(shelter_router)
+app.include_router(donation_router)
+app.include_router(daraja.router)
 
 app.add_middleware(
     CORSMiddleware,

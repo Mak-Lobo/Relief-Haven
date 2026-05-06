@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
 import 'package:relief_haven_mobile/pages/registration.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:toastification/toastification.dart';
 
 import 'package:relief_haven_mobile/pages/chat.dart';
 import 'package:relief_haven_mobile/pages/donations.dart';
@@ -12,6 +13,7 @@ import 'package:relief_haven_mobile/pages/home.dart';
 import 'package:relief_haven_mobile/pages/login.dart';
 import 'package:relief_haven_mobile/pages/profile.dart';
 import 'package:relief_haven_mobile/providers/auth_provider.dart';
+import 'package:relief_haven_mobile/providers/theme_provider.dart';
 import 'package:relief_haven_mobile/services/requests/base.dart';
 import 'package:relief_haven_mobile/utils/elevated_button.dart';
 
@@ -31,40 +33,47 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Relief Haven',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0277BD),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+
+    return ToastificationWrapper(
+      config: ToastificationConfig(
+        animationDuration: const Duration(milliseconds: 500),
+      ),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Relief Haven',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF0277BD),
+            brightness: Brightness.light,
+          ),
           brightness: Brightness.light,
+          useMaterial3: true,
+          textTheme: GoogleFonts.dmSansTextTheme(),
+          elevatedButtonTheme: customElevatedBtnTheme,
         ),
-        brightness: Brightness.light,
-        useMaterial3: true,
-        textTheme: GoogleFonts.dmSansTextTheme(),
-        elevatedButtonTheme: customElevatedBtnTheme,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0277BD),
+        darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF0277BD),
+            brightness: Brightness.dark,
+          ),
           brightness: Brightness.dark,
+          useMaterial3: true,
+          textTheme: GoogleFonts.dmSansTextTheme(),
+          elevatedButtonTheme: customElevatedBtnTheme,
         ),
-        brightness: Brightness.dark,
-        useMaterial3: true,
-        textTheme: GoogleFonts.dmSansTextTheme(),
-        elevatedButtonTheme: customElevatedBtnTheme,
+        themeMode: themeMode,
+        routes: {
+          '/login': (context) => const LoginScreen(),
+          '/registration': (context) => const RegistrationScreen(),
+        },
+        home: const AuthGate(),
       ),
-      themeMode: .light,
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/registration': (context) => const RegistrationScreen(),
-      },
-      home: const AuthGate(),
     );
   }
 }

@@ -5,7 +5,7 @@ const supabase = createClient(
     import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 );
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.BACKEND_URL;
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export async function SignUp({firstName, lastName, email, password, phone, role, county}) {
     if (!backendUrl) {

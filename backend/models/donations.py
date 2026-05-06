@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 from uuid import UUID
 from pydantic import BaseModel
 
@@ -17,3 +18,10 @@ class DonationOut(BaseModel):
     transaction_id: str
     payment_service: str
     created_at: datetime
+
+
+class DonationRequest(BaseModel):
+    user_id: UUID
+    amount_kes: float
+    phone: int
+    payment_service: Literal["mpesa", "airtel-money"]

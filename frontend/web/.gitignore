@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
+backend.md
+relief_haven_auth_flow.md
+haven_crud.sql

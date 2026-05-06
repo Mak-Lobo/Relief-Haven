@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class DonationModel {
   final String donationId;
   final String userId;
@@ -17,14 +19,15 @@ class DonationModel {
 
   // ── Display helpers ──────────────────────────────────────────────────────
 
-  /// Formatted KES amount: 'KES 1,500.00'
+  /// Formatted KES amount: `KES 1,500.00`.
   String get formattedAmount {
-    // intl NumberFormat used at the widget layer via DateFormatter utils.
-    // Raw getter provided here for simple use.
-    return 'KES ${amountKes.toStringAsFixed(2)}';
+    return NumberFormat.currency(
+      symbol: 'KES ',
+      decimalDigits: 2,
+    ).format(amountKes);
   }
 
-  // ── Serialisation ────────────────────────────────────────────────────────
+  String get formattedDate => DateFormat('dd MMM yyyy').format(createdAt);
 
   factory DonationModel.fromJson(Map<String, dynamic> json) {
     return DonationModel(
@@ -36,17 +39,6 @@ class DonationModel {
       createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
-
-  // Map<String, dynamic> toJson() {
-  //   return {
-  //     'donation_id': donationId,
-  //     'user_id': userId,
-  //     'amount_kes': amountKes,
-  //     'transaction_id': transactionId,
-  //     'payment_service': paymentService,
-  //     'created_at': createdAt.toIso8601String(),
-  //   };
-  // }
 
   DonationModel copyWith({
     String? donationId,
@@ -66,11 +58,6 @@ class DonationModel {
     );
   }
 
-  // @override
-  // String toString() =>
-  //     'DonationModel(donationId: $donationId, amountKes: $amountKes, '
-  //     'transactionId: $transactionId)';
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -80,36 +67,4 @@ class DonationModel {
 
   @override
   int get hashCode => donationId.hashCode;
-}
-
-// ── STK Push initiation request ──────────────────────────────────────────────
-//
-// Sent by Flutter to POST /donations/initiate.
-// Backend uses this to trigger the M-Pesa STK Push via Daraja API.
-// The phone_number is optional to support using a number different from the
-// one registered to the account.
-//
-// Fields:
-//   amount_kes    → donation amount in Kenyan Shillings (must be >= 1.0)
-//   payment_service → selected payment option (e.g. 'mpesa', 'airtel')
-//   phone_number  → optional number for STK Push (e.g. 254712345678)
-
-class DonationInitiateRequest {
-  final double amountKes;
-  final String paymentService;
-  final int? phoneNumber;
-
-  const DonationInitiateRequest({
-    required this.amountKes,
-    required this.paymentService,
-    this.phoneNumber,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'amount_kes': amountKes,
-      'payment_service': paymentService,
-      if (phoneNumber != null) 'phone_number': phoneNumber,
-    };
-  }
 }
