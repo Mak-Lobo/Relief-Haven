@@ -9,6 +9,7 @@ const breadcrumbMap = {
     "/shelters": "Shelters",
     "/shelters/add": "Register Shelter",
     "/shelters/update": "Update shelter",
+    "/shelters/resources": "Update resources",
     "/financials": "Financials",
     "/profile": "Account",
 };
@@ -16,7 +17,13 @@ const breadcrumbMap = {
 export const Header = () => {
     const {pathname} = useLocation();
     const {user, profile} = useAuth();
-    const currentPage = breadcrumbMap[pathname] ?? "Dashboard";
+    const currentPage =
+        breadcrumbMap[pathname] ??
+        (pathname.startsWith("/shelters/update")
+            ? "Update shelter"
+            : pathname.startsWith("/shelters/resources")
+                ? "Update resources"
+                : "Dashboard");
 
     // Get display name from profile or email
     const getDisplayName = () => {

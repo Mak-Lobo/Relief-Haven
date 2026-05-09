@@ -11,7 +11,7 @@ const getAuthHeaders = (token) => ({
 export const checkShelterPermission = (userRole, operation) => {
     const permissions = {
         'command': ['create', 'update', 'deactivate'],
-        'manager': ['update_resources']
+        'manager': ['update_resources', 'update_occupancy']
     };
 
     return permissions[userRole]?.includes(operation) || false;
@@ -145,7 +145,7 @@ export const updateShelter = async (token, shelterId, shelterData, userRole) => 
 
 // Update shelter occupancy (command role only)
 export const updateShelterOccupancy = async (token, shelterId, occupancyData, userRole) => {
-    if (!checkShelterPermission(userRole, 'update')) {
+    if (!checkShelterPermission(userRole, 'update_occupancy')) {
         throw new Error('Insufficient permissions to update shelter occupancy');
     }
 

@@ -3,13 +3,18 @@ import {MdAdd, MdClose, MdEdit} from "react-icons/md";
 import {Link} from "react-router-dom";
 import common from "../../styles/views-common.module.css";
 import {useAuth} from "../../context/AuthContext.jsx";
-import {getShelters, deactivateShelter} from "../../services/shelter/shelterService";
+import {
+    getShelters,
+    getSheltersByCounty,
+    deactivateShelter,
+} from "../../services/shelter/shelterService";
 
 const ShelterOverview = () => {
     const {user, profile} = useAuth();
     const [shelters, setShelters] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const managerCounty = profile?.role_user === "manager" ? `${profile.county_work.charAt(0).toUpperCase()}${profile.county_work.slice(1).toLowerCase()}` : null;
 
     useEffect(() => {
         const fetchShelters = async () => {
@@ -17,11 +22,9 @@ const ShelterOverview = () => {
 
             try {
                 setLoading(true);
-                const data = await getShelters(
-                    user.token,
-                    profile.role_user,
-                    profile.role_user === 'manager' ? profile.county_work : null
-                );
+                const data = profile.role_user === "manager" && managerCounty
+                    ? await getSheltersByCounty(user.token, managerCounty)
+                    : await getShelters(user.token, profile.role_user, managerCounty);
                 setShelters(data);
             } catch (err) {
                 setError(err.message);
@@ -42,11 +45,9 @@ const ShelterOverview = () => {
         try {
             await deactivateShelter(user.token, shelterId, profile.role_user);
             // Refresh the shelters list
-            const data = await getShelters(
-                user.token,
-                profile.role_user,
-                profile.role_user === 'manager' ? profile.county_work : null
-            );
+            const data = profile.role_user === "manager" && managerCounty
+                ? await getSheltersByCounty(user.token, managerCounty)
+                : await getShelters(user.token, profile.role_user, managerCounty);
             setShelters(data);
         } catch (err) {
             setError(err.message);
@@ -76,7 +77,7 @@ const ShelterOverview = () => {
         <div className={common.pageStack}>
             <div className={common.pageHeaderRow}>
                 <h1 className={common.pageTitle}>
-                    {profile?.role_user === 'manager' ? `${profile.county_work} County Shelters` : 'All Shelters'}
+                    {profile?.role_user === 'manager' ? `${profile.county_work.charAt(0).toUpperCase()}${profile.county_work.slice(1).toLowerCase()} County Shelters` : 'All Shelters'}
                 </h1>
                 {profile?.role_user === 'command' && (
                     <Link className={common.primaryAction} to="/shelters/add">
@@ -138,6 +139,10 @@ const ShelterOverview = () => {
                                             <Link
                                                 className={common.inlineAction}
                                                 to={`/shelters/resources/${shelter.shelter_id}`}
+                                                state={{
+                                                    shelterName: shelter.name,
+                                                    capacity: shelter.capacity,
+                                                }}
                                             >
                                                 <MdEdit/>
                                                 <span>Update Resources</span>

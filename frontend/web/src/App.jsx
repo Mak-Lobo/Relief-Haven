@@ -8,6 +8,7 @@ import Profile from "./pages/views/Profile.jsx";
 import Financials from "./pages/views/Financials.jsx";
 import AddShelter from "./pages/views/AddShelter.jsx";
 import UpdateShelter from "./pages/views/UpdateShelter.jsx";
+import ShelterResources from "./pages/views/ShelterResources.jsx";
 
 function App() {
     return (
@@ -19,7 +20,8 @@ function App() {
                     <Route index element={<Dashboard/>}/>
                     <Route path="shelters" element={<ShelterOverview/>}/>
                     <Route path="shelters/add" element={<AddShelter/>}/>
-                    <Route path="shelters/update" element={<UpdateShelter/>}/>
+                    <Route path="shelters/update/:shelterId" element={<UpdateShelter/>}/>
+                    <Route path="shelters/resources/:shelterId" element={<ShelterResources/>}/>
                     <Route path="financials" element={<Financials/>}/>
                     <Route path="profile" element={<Profile/>}/>
                 </Route>
