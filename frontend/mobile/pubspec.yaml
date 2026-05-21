@@ -46,6 +46,8 @@ dependencies:
   latlong2: any
   toastification: any
   flutter_native_splash: ^2.4.7
+  chat_bubbles: any
+  flutter_markdown_plus: any
 
 
 dev_dependencies:

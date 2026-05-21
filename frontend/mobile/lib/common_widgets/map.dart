@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../services/location/user_locate.dart';
 import '../providers/location_provider.dart';
+import 'shimmer_loading.dart';
 
 class UserMap extends ConsumerStatefulWidget {
   const UserMap({super.key});
@@ -29,12 +30,11 @@ class _UserMapState extends ConsumerState<UserMap>
 
   @override
   Widget build(BuildContext context) {
-    final positionAsync = ref.watch(currentPositionProvider);
+    final positionAsync = ref.watch(positionStreamProvider);
     final colors = Theme.of(context).colorScheme;
 
     return positionAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-
+      loading: () => const MapShimmer(),
       error: (e, _) => Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -60,7 +60,6 @@ class _UserMapState extends ConsumerState<UserMap>
           ),
         ),
       ),
-
       data: (position) {
         final userLatLng = LatLng(position.latitude, position.longitude);
 
@@ -71,7 +70,6 @@ class _UserMapState extends ConsumerState<UserMap>
             initialZoom: 15,
             keepAlive: true,
             backgroundColor: colors.surfaceContainerLow,
-            // initialCameraFit: CameraFit.coordinates(coordinates: points),
           ),
           children: [
             TileLayer(
@@ -84,7 +82,9 @@ class _UserMapState extends ConsumerState<UserMap>
                   width: 32,
                   height: 32,
                   point: userLatLng,
-                  child: Icon(
+                  alignment: Alignment.topCenter,
+                  rotate: true,
+                  child: const Icon(
                     Icons.location_pin,
                     color: Colors.redAccent,
                     size: 32,

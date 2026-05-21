@@ -54,6 +54,13 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       return;
     }
 
+    toastification.show(
+      context: context,
+      type: ToastificationType.success,
+      description: const Text('Account created successfully! Please log in.'),
+      icon: const Icon(Icons.check_circle_outline_rounded),
+    );
+
     Navigator.of(context).pushReplacementNamed('/login');
   }
 
@@ -66,9 +73,17 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       final previousError = previous?.errorMessage;
       final nextError = next.errorMessage;
       if (nextError != null && nextError != previousError) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text(nextError)));
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          title: Text("Registration Error"),
+          description: Text(nextError),
+          icon: const Icon(Icons.error_outline_rounded),
+          style: ToastificationStyle.flatColored,
+          alignment: Alignment.bottomCenter,
+          backgroundColor: Theme.of(context).colorScheme.error,
+          foregroundColor: Theme.of(context).colorScheme.onError,
+        );
       }
     });
 

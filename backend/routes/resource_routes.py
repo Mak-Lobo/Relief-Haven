@@ -39,7 +39,7 @@ async def get_resource_by_id(resource_id: UUID, pool=Depends(get_pool)):
 @router.post("/add", response_model=ResourceOut)
 async def create_resource(resource: ResourceIn, pool=Depends(get_pool)):
     """Add a resource record for a shelter."""
-    query = "SELECT * FROM haven_create_resource($1, $2, $3, $4, $5)"
+    query = "SELECT * FROM haven_create_resource($1::uuid, $2::integer, $3::integer, $4::integer, $5::text)"
     async with pool.acquire() as conn:
         row = await conn.fetchrow(
             query,
@@ -59,7 +59,7 @@ async def update_resource(
         pool=Depends(get_pool),
 ):
     """Update resource availability."""
-    query = "SELECT * FROM haven_update_resource($1, $2, $3, $4, $5)"
+    query = "SELECT * FROM haven_update_resource($1::uuid, $2::integer, $3::integer, $4::integer, $5::text)"
     async with pool.acquire() as conn:
         row = await conn.fetchrow(
             query,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/widget_previews.dart';
 
 import 'package:relief_haven_mobile/common_widgets/custom_input_fields.dart';
 import 'package:relief_haven_mobile/providers/auth_provider.dart';
@@ -43,6 +42,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
+    toastification.show(
+      context: context,
+      type: ToastificationType.success,
+      description: const Text('Welcome back!'),
+      icon: const Icon(Icons.check_circle_outline_rounded),
+    );
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Welcome back.')));

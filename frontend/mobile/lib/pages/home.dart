@@ -53,18 +53,10 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 15),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 22),
-              child: _SearchBar(),
-            ),
             const SizedBox(height: 10),
             Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(height: 350, child: UserMap()),
-                ),
+                SizedBox(height: 350, child: UserMap()),
                 const Padding(
                   padding: EdgeInsets.only(top: 300, left: 20, right: 20),
                   child: _ShelterSection(),
@@ -111,38 +103,6 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 24),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _SearchBar extends StatelessWidget {
-  const _SearchBar();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      height: 50,
-      decoration: BoxDecoration(
-        color: colors.primaryContainer,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.search_rounded, size: 24, color: colors.primary),
-          const SizedBox(width: 12),
-          Text(
-            'Search for shelters',
-            style: textTheme.labelLarge?.copyWith(
-              color: colors.primary,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ],
       ),
     );
   }

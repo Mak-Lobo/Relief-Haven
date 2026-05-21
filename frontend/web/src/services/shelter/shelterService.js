@@ -239,7 +239,7 @@ export const createShelterResource = async (token, resourceData, userRole) => {
     }
 
     try {
-        const response = await fetch(`${API_URL}/resources`, {
+        const response = await fetch(`${API_URL}/resources/add`, {
             method: 'POST',
             headers: getAuthHeaders(token),
             body: JSON.stringify(resourceData)

@@ -23,15 +23,15 @@ class ChatbotLogModel {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'chat_id': chatId,
-      'user_id': userId,
-      'prompt': prompt,
-      'response': response,
-      'created_at': createdAt.toIso8601String(),
-    };
-  }
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'chat_id': chatId,
+  //     'user_id': userId,
+  //     'prompt': prompt,
+  //     'response': response,
+  //     'created_at': createdAt.toIso8601String(),
+  //   };
+  // }
 
   ChatbotLogModel copyWith({
     String? chatId,
@@ -53,13 +53,12 @@ class ChatbotLogModel {
 /// Request payload for chatbot interaction.
 /// User input from mobile is only the prompt; user/date metadata is backend-derived.
 class ChatPromptRequest {
+  final String userId;
   final String prompt;
 
-  const ChatPromptRequest({required this.prompt});
+  const ChatPromptRequest({required this.prompt, required this.userId});
 
   Map<String, dynamic> toJson() {
-    return {
-      'prompt': prompt,
-    };
+    return {'user_id': userId, 'prompt': prompt};
   }
 }

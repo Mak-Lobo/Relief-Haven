@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'package:relief_haven_mobile/providers/auth_provider.dart';
 import 'package:relief_haven_mobile/utils/elevated_button.dart';
+import 'package:relief_haven_mobile/common_widgets/shimmer_loading.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -51,7 +52,7 @@ class ProfileScreen extends ConsumerWidget {
       body: SafeArea(
         bottom: false,
         child: authState.isInitializing && authState.profile == null
-            ? const Center(child: CircularProgressIndicator())
+            ? const ProfileShimmer()
             : SingleChildScrollView(
                 child: Column(
                   children: [

@@ -7,10 +7,8 @@ import styles from "../../styles/shelter-form.module.css";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {
     getShelterById,
-    getShelterResources,
     createShelterResource,
     updateShelterOccupancy,
-    updateShelterResource,
 } from "../../services/shelter/shelterService";
 
 const sliderTheme = {
@@ -38,61 +36,39 @@ const ShelterResources = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const {user, profile} = useAuth();
-    const selectedShelterName = location.state?.shelterName ?? shelter?.name ?? "Selected Shelter";
-    const selectedShelterCapacity = location.state?.capacity ?? shelter?.capacity ?? 0;
 
     const [shelter, setShelter] = useState(null);
-    const [resources, setResources] = useState([]);
-    const [selectedResourceId, setSelectedResourceId] = useState("");
     const [occupancy, setOccupancy] = useState(0);
     const [formData, setFormData] = useState(defaultResourceForm);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const selectedShelterName = location.state?.shelterName ?? shelter?.name ?? "Selected Shelter";
+    const selectedShelterCapacity = location.state?.capacity ?? shelter?.capacity ?? 0;
 
     useEffect(() => {
-        const fetchResourceData = async () => {
+        const fetchShelterData = async () => {
             if (!user?.token || !profile || !shelterId) return;
 
             try {
                 setLoading(true);
                 setError(null);
 
-                const [shelterData, resourceData] = await Promise.all([
-                    getShelterById(user.token, shelterId),
-                    getShelterResources(user.token, shelterId),
-                ]);
-
-                const sortedResources = [...resourceData].sort(
-                    (left, right) => new Date(right.updated_at).getTime() - new Date(left.updated_at).getTime()
-                );
+                const shelterData = await getShelterById(user.token, shelterId);
 
                 setShelter(shelterData);
                 setOccupancy(shelterData.occupancy ?? 0);
-                setResources(sortedResources);
-
-                const initialResource = sortedResources[0] ?? null;
-                setSelectedResourceId(initialResource?.resource_id ?? "");
-                setFormData(
-                    initialResource
-                        ? {
-                            food: initialResource.food ?? 0,
-                            water: initialResource.water ?? 0,
-                            medical: initialResource.medical ?? 0,
-                            add_notes: initialResource.add_notes ?? "",
-                        }
-                        : defaultResourceForm
-                );
+                setFormData(defaultResourceForm);
             } catch (err) {
-                setError(err.message || "Failed to load shelter resources.");
-                console.error("Error fetching shelter resources:", err);
+                setError(err.message || "Failed to load shelter data.");
+                console.error("Error fetching shelter data:", err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchResourceData();
+        fetchShelterData();
     }, [user, profile, shelterId]);
 
     const handleInputChange = (event) => {
@@ -108,11 +84,6 @@ const ShelterResources = () => {
 
         if (!user?.token || !profile) {
             setError("Authentication failed. Please log in again.");
-            return;
-        }
-
-        if (!selectedResourceId) {
-            setError("No resource record is available for this shelter yet.");
             return;
         }
 
@@ -135,20 +106,11 @@ const ShelterResources = () => {
                 add_notes: formData.add_notes.trim() ? formData.add_notes.trim() : null,
             };
 
-            if (selectedResourceId) {
-                await updateShelterResource(
-                    user.token,
-                    selectedResourceId,
-                    resourcePayload,
-                    profile.role_user
-                );
-            } else {
-                await createShelterResource(
-                    user.token,
-                    resourcePayload,
-                    profile.role_user
-                );
-            }
+            await createShelterResource(
+                user.token,
+                resourcePayload,
+                profile.role_user
+            );
 
             setSuccess(true);
             setTimeout(() => {
@@ -213,35 +175,6 @@ const ShelterResources = () => {
                                 {...sliderTheme}
                             />
                         </div>
-
-                        {resources.length > 1 && (
-                            <label className={styles.formField} style={{gridColumn: "1 / -1"}}>
-                                <span className={common.fieldLabel}>Resource Record</span>
-                                <select
-                                    className={styles.textInput}
-                                    value={selectedResourceId}
-                                    onChange={(event) => {
-                                        const resource = resources.find((item) => item.resource_id === event.target.value);
-                                        setSelectedResourceId(event.target.value);
-                                        if (resource) {
-                                            setFormData({
-                                                food: resource.food ?? 0,
-                                                water: resource.water ?? 0,
-                                                medical: resource.medical ?? 0,
-                                                add_notes: resource.add_notes ?? "",
-                                            });
-                                        }
-                                    }}
-                                >
-                                    {resources.map((resource, index) => (
-                                        <option key={resource.resource_id} value={resource.resource_id}>
-                                            Record {index + 1}
-                                            {resource.updated_at ? ` - ${new Date(resource.updated_at).toLocaleString()}` : ""}
-                                        </option>
-                                    ))}
-                                </select>
-                            </label>
-                        )}
 
                         <div className={styles.sliderGroup} style={{gridColumn: "1 / -1"}}>
                             <div className={styles.sliderHeaderRow}>

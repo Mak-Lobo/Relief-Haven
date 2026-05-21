@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:relief_haven_mobile/common_widgets/custom_input_fields.dart';
@@ -9,6 +8,7 @@ import 'package:relief_haven_mobile/providers/auth_provider.dart';
 import 'package:relief_haven_mobile/providers/donation_provider.dart';
 import 'package:relief_haven_mobile/services/requests/base.dart';
 import 'package:relief_haven_mobile/services/requests/donation_request.dart';
+import 'package:relief_haven_mobile/common_widgets/shimmer_loading.dart';
 import 'package:toastification/toastification.dart';
 
 import '../common_widgets/donation_header.dart';
@@ -109,7 +109,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: donationsAsync.when(
-                  loading: () => const CircularProgressIndicator.adaptive(),
+                  loading: () => const DonationHistoryShimmer(),
                   error: (error, _) => Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(

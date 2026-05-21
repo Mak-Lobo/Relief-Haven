@@ -26,7 +26,7 @@ async def gen_new_chat(chat: ChatLogIn, pool=Depends(get_pool)):
         async with pool.acquire() as conn:
             result = await conn.fetchrow(query, chat.user_id, chat.prompt, response)
 
-            logger.info(f'Prompt: {chat.prompt}, Response: \n{response}')
+            logger.info(f'Prompt: {chat.prompt}. \n\tResponse: {response}')
             return dict(result)
 
     except Exception as e:
@@ -41,8 +41,8 @@ async def chats_by_user_id(user_id: UUID, pool=Depends(get_pool)):
             result = await conn.fetch(query, user_id)
 
             if not result:
-                logger.error(f'Data not found')
-                raise HTTPException(status_code=404, detail="Data not found")
+                logger.error(f'Data is empty')
+                return []
             logger.info(f'User ID: {user_id}')
             return [dict(row) for row in result]
 

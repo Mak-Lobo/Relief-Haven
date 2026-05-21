@@ -7,6 +7,7 @@ import 'package:relief_haven_mobile/pages/registration.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:toastification/toastification.dart';
 
+import 'package:relief_haven_mobile/common_widgets/shimmer_loading.dart';
 import 'package:relief_haven_mobile/pages/chat.dart';
 import 'package:relief_haven_mobile/pages/donations.dart';
 import 'package:relief_haven_mobile/pages/home.dart';
@@ -86,7 +87,7 @@ class AuthGate extends ConsumerWidget {
     final authState = ref.watch(authProvider);
 
     if (authState.isInitializing) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const ShimmerLoading();
     }
 
     if (!authState.isAuthenticated) {

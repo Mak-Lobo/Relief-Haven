@@ -29,8 +29,8 @@ class Base {
     _dio = Dio(
       BaseOptions(
         baseUrl: baseURL,
-        connectTimeout: const Duration(milliseconds: 8000),
-        receiveTimeout: const Duration(milliseconds: 8000),
+        connectTimeout: const Duration(milliseconds: 12500),
+        receiveTimeout: const Duration(milliseconds: 12500),
         headers: {
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true',
