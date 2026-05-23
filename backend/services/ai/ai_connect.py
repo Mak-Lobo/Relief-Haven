@@ -4,7 +4,7 @@ from google.genai import Client
 from dotenv import load_dotenv
 from google.genai.types import GenerateContentConfig
 
-from instructions import instructions
+from services.ai import instructions
 
 load_dotenv()
 

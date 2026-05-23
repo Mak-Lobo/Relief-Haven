@@ -3,13 +3,14 @@ from contextlib import asynccontextmanager
 import asyncpg
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from database import connect_db, disconnect_db, get_pool
+from services.database import connect_db, disconnect_db, get_pool
 
 from routes.user_routes import router as user_router
 from routes.shelter_routes import router as shelter_router
 from routes.donation_routes import router as donation_router
 from routes.chat_routes import router as chat_router
 from routes.resource_routes import router as resource_router
+from routes.nav_routes import router as nav_router
 from daraja_sdk import fastapi as daraja
 
 origins = [
@@ -35,6 +36,7 @@ app.include_router(donation_router)
 app.include_router(daraja.router)
 app.include_router(chat_router)
 app.include_router(resource_router)
+app.include_router(nav_router)
 
 app.add_middleware(
     CORSMiddleware,

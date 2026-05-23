@@ -3,8 +3,8 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends
 import logging
 
-from ai_connect import generate_content
-from database import get_pool
+from services.ai.ai_connect import generate_content
+from services.database import get_pool
 from models.chat import ChatLogIn, ChatLogOut
 
 router = APIRouter(prefix="/chat", tags=["chat"])

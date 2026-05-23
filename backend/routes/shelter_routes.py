@@ -9,7 +9,7 @@ from models.shelters import (
     ShelterOut,
     ShelterUpdate,
 )
-from database import get_pool
+from services.database import get_pool
 
 router = APIRouter(prefix="/shelters", tags=["shelters"])
 
@@ -106,6 +106,46 @@ async def update_shelter_occupancy(shelter_id: UUID, occupancy_update: ShelterOc
     if not result:
         raise HTTPException(status_code=404, detail="Shelter not found")
     return dict(result)
+
+
+@router.patch("/{shelter_id}/deactivate")
+async def deactivate_shelter(shelter_id: UUID, pool=Depends(get_pool)):
+    """Deactivate a shelter and delete its resources."""
+    async with pool.acquire() as conn:
+        async with conn.transaction():
+            result = await conn.fetchrow(
+                """
+                UPDATE shelters
+                SET is_active = FALSE,
+                    updated_at = NOW()
+                WHERE shelter_id = $1
+                RETURNING shelter_id
+                """,
+                shelter_id,
+            )
+            if not result:
+                raise HTTPException(status_code=404, detail="Shelter not found")
+            await conn.execute("DELETE FROM resources WHERE shelter_id = $1", shelter_id)
+    return {"message": "Shelter deactivated successfully"}
+
+
+@router.patch("/{shelter_id}/activate")
+async def activate_shelter(shelter_id: UUID, pool=Depends(get_pool)):
+    """Activate a shelter."""
+    async with pool.acquire() as conn:
+        result = await conn.fetchrow(
+            """
+            UPDATE shelters
+            SET is_active = TRUE,
+                updated_at = NOW()
+            WHERE shelter_id = $1
+            RETURNING shelter_id
+            """,
+            shelter_id,
+        )
+        if not result:
+            raise HTTPException(status_code=404, detail="Shelter not found")
+    return {"message": "Shelter activated successfully"}
 
 
 @router.delete("/{shelter_id}")

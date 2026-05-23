@@ -108,7 +108,7 @@ class ChatController extends Notifier<ChatState> {
       _setState(
         messages: [
           ...state.messages,
-          if (newChat != null) newChat,
+          newChat!,
         ],
         isSending: false,
         clearPendingPrompt: true,

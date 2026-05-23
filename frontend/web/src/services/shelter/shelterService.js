@@ -10,7 +10,7 @@ const getAuthHeaders = (token) => ({
 // Check if user has permission for shelter operations
 export const checkShelterPermission = (userRole, operation) => {
     const permissions = {
-        'command': ['create', 'update', 'deactivate'],
+        'command': ['create', 'update', 'deactivate', 'activate'],
         'manager': ['update_resources', 'update_occupancy']
     };
 
@@ -174,8 +174,8 @@ export const deactivateShelter = async (token, shelterId, userRole) => {
     }
 
     try {
-        const response = await fetch(`${API_URL}/shelters/${shelterId}`, {
-            method: 'DELETE',
+        const response = await fetch(`${API_URL}/shelters/${shelterId}/deactivate`, {
+            method: 'PATCH',
             headers: getAuthHeaders(token)
         });
 
@@ -186,6 +186,29 @@ export const deactivateShelter = async (token, shelterId, userRole) => {
         return await response.json();
     } catch (error) {
         console.error('Error deactivating shelter:', error);
+        throw error;
+    }
+};
+
+// Activate shelter (command role only)
+export const activateShelter = async (token, shelterId, userRole) => {
+    if (!checkShelterPermission(userRole, 'activate')) {
+        throw new Error('Insufficient permissions to activate shelter');
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/shelters/${shelterId}/activate`, {
+            method: 'PATCH',
+            headers: getAuthHeaders(token)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to activate shelter: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error activating shelter:', error);
         throw error;
     }
 };

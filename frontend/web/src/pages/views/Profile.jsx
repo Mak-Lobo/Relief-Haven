@@ -26,7 +26,7 @@ const Profile = () => {
         ...(profile.role_user === 'manager' ? [
             {
                 label: "County of work",
-                value: profile.county_work ? `${profile.county_work}` : "N/A"
+                value: profile.county_work ? `${profile.county_work.charAt(0).toUpperCase()}${profile.county_work.slice(1).toLowerCase()}` : "N/A"
             }
         ] : []),
         {label: "Email Address", value: user?.email || "N/A"},

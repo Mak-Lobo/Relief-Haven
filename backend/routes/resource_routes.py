@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from database import get_pool
+from services.database import get_pool
 from models.resource import ResourceIn, ResourceOut, ResourceUpdate
 
 router = APIRouter(prefix="/resources", tags=["resources"])

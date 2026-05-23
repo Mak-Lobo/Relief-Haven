@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, logger
 
 from models.users import UserIn, UserOut, UserRoleUpdate
-from database import get_pool
+from services.database import get_pool
 
 router = APIRouter(prefix="/users", tags=["users"])
 

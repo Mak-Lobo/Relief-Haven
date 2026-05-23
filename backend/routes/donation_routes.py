@@ -3,10 +3,10 @@ from daraja_sdk import fastapi as daraja, MpesaClient
 from daraja_sdk import MpesaSTKError, MpesaTimeoutError
 from loguru import logger
 
-from models.donations import DonationIn, DonationOut, DonationRequest
-from database import get_pool
-from payments.airtel import airtel_push
-from payments.mpesa import MPESA_CONFIG
+from models.donations import DonationOut, DonationRequest
+from services.database import get_pool
+from services.payments.airtel import airtel_push
+from services.payments.mpesa import MPESA_CONFIG
 
 router = APIRouter(prefix="/donations", tags=["donations"])
 
@@ -20,13 +20,23 @@ async def handle_mpesa_payment(data: dict) -> None:
     pool = get_pool()
     async with pool.acquire() as conn:
         async with conn.transaction():
-            await conn.execute(
-                "CALL haven_process_donation($1, $2, $3, $4, $5)",
+            donation = await conn.fetchrow(
+                """
+                INSERT INTO donations (user_id, amount_kes, transaction_id, payment_service)
+                SELECT $1, $2, $3, $4
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM donations WHERE transaction_id = $3
+                )
+                RETURNING donation_id
+                """,
                 user_id,
                 float(amount),
                 receipt,
                 "mpesa",
             )
+            if not donation:
+                logger.warning(f"Duplicate donation ignored — receipt: {receipt}")
+                return
 
     log_info = f'Donation recorded — receipt: {receipt}, amount: {amount}. User: {user_id}'
     logger.info(log_info)
@@ -38,7 +48,7 @@ async def initiate_donation(payload: DonationRequest):
         try:
             async with MpesaClient(**MPESA_CONFIG) as client:
                 resp = await client.stk_push(
-                    phone=str(payload.phone),
+                    phone=str(f'254{payload.phone}'),
                     amount=int(payload.amount_kes),
                     account_reference=str(payload.user_id),
                     transaction_desc="Relief Haven Donation",
