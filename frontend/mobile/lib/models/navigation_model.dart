@@ -45,6 +45,22 @@ class NearestShelterRouteModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'shelter_id': shelterId,
+      'name': name,
+      'subcounty': subcounty,
+      'county': county,
+      'location': location,
+      'capacity': capacity,
+      'occupancy': occupancy,
+      'is_active': isActive,
+      'distance_meters': distanceMeters,
+      'distance_km': distanceKm,
+      'duration_seconds': durationSeconds,
+    };
+  }
+
   int get availableSpaces => capacity - occupancy;
   bool get isFull => occupancy >= capacity;
   String get areaLabel => '$subcounty, $county';

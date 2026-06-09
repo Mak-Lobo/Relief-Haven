@@ -6,6 +6,7 @@ import 'package:logger/logger.dart';
 import 'package:relief_haven_mobile/pages/registration.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:toastification/toastification.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 
 import 'package:relief_haven_mobile/common_widgets/shimmer_loading.dart';
 import 'package:relief_haven_mobile/pages/chat.dart';
@@ -20,6 +21,8 @@ import 'package:relief_haven_mobile/utils/elevated_button.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await FMTCObjectBoxBackend().initialise();
+  await const FMTCStore('mapCache').manage.create();
   await dotenv.load(fileName: ".env");
 
   final logger = Logger();

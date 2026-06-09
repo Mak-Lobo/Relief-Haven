@@ -1,10 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:logger/logger.dart';
+// import 'package:logger/logger.dart';
 
 import '../../models/navigation_model.dart';
 import 'base.dart';
 
-final _logger = Logger();
 
 class NavigationRequest extends Base {
   Future<List<NearestShelterRouteModel>> fetchNearestShelters({

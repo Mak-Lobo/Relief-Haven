@@ -21,7 +21,7 @@ class DonationScreen extends ConsumerStatefulWidget {
 }
 
 class _DonationScreenState extends ConsumerState<DonationScreen> {
-  final _formAnchorKey = GlobalKey();
+  bool showDonationForm = true;
 
   @override
   void dispose() {
@@ -51,7 +51,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5),
           child: Column(
-            children: [
+            children: <Widget>[
               Align(
                 alignment: Alignment.topCenter,
                 child: Card(
@@ -85,13 +85,35 @@ class _DonationScreenState extends ConsumerState<DonationScreen> {
                     ),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    showDonationForm = !showDonationForm;
+                  });
+                },
                 child: const Text('Donate Now'),
               ),
-              Container(key: _formAnchorKey, child: const _DonationForm()),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SizeTransition(
+                      sizeFactor: animation,
+                      axisAlignment: -1.0,
+                      child: child,
+                    ),
+                  );
+                },
+                child: showDonationForm
+                    ? Container(
+                        key: const ValueKey('donation_form'),
+                        child: const _DonationForm(),
+                      )
+                    : const SizedBox.shrink(key: ValueKey('empty_form')),
+              ),
               const SizedBox(height: 15),
               Divider(color: colors.outlineVariant, height: 1),
-              const SizedBox(height: 18),
+              const SizedBox(height: 15),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Align(
@@ -249,7 +271,7 @@ class _DonationFormState extends ConsumerState<_DonationForm> {
 
     int? phoneNumber;
     if (_useAccountPhoneNumber) {
-      phoneNumber = profilePhone;
+      phoneNumber = int.tryParse('254${profilePhone}');
       if (phoneNumber == null) {
         toastification.show(
           type: .warning,

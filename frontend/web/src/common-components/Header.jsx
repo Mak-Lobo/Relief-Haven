@@ -10,6 +10,7 @@ const breadcrumbMap = {
     "/shelters/add": "Register Shelter",
     "/shelters/update": "Update shelter",
     "/shelters/resources": "Update resources",
+    "/resources": "Resource updates",
     "/financials": "Financials",
     "/profile": "Account",
 };
@@ -23,6 +24,8 @@ export const Header = () => {
             ? "Update shelter"
             : pathname.startsWith("/shelters/resources")
                 ? "Update resources"
+                : pathname.startsWith("/resources")
+                    ? "Resource updates"
                 : "Dashboard");
 
     // Get display name from profile or email

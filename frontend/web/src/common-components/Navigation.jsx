@@ -1,5 +1,5 @@
 import {NavLink} from "react-router-dom";
-import {MdDashboard, MdHome, MdMessage, MdMoney, MdLogout} from "react-icons/md";
+import {MdDashboard, MdHome, MdMessage, MdMoney, MdHistory} from "react-icons/md";
 import compass from "../assets/compass.png";
 import styles from "../styles/skeleton.module.css";
 import "../App.css";
@@ -42,6 +42,15 @@ export const Navigation = () => {
                         >
                             <MdMoney/>
                             <span>Financials</span>
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink
+                            to="/resources"
+                            className={({isActive}) => isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink}
+                        >
+                            <MdHistory/>
+                            <span>Resources</span>
                         </NavLink>
                     </li>
                     <li>

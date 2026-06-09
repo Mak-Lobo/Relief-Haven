@@ -19,18 +19,18 @@ async def fetch_available_shelters(
 ) -> list[dict]:
     # Fetching active shelters within a given proximity
     query = """
-            SELECT shelter_id, \
-                   name, \
-                   subcounty, \
+            SELECT shelter_id,
+                   name,
+                   subcounty,
                    county,
                    ST_AsText(location) AS location,
-                   capacity, \
-                   occupancy, \
-                   is_active, \
-                   updated_at, \
+                   capacity,
+                   occupancy,
+                   is_active,
+                   updated_at,
                    added_at
             FROM shelters
-            WHERE is_active = TRUE \
+            WHERE is_active = TRUE
               AND occupancy < capacity
             ORDER BY ST_DistanceSphere(
                              location,

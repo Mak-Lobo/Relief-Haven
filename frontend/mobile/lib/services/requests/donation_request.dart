@@ -56,7 +56,7 @@ class DonationRequest extends Base {
         data: {'user_id': currentUser.id, ...request.toJson()},
       );
       _logger.i(
-        'STK Push sent for user ${currentUser.id} via ${request.paymentService}',
+        'STK Push sent for user ${currentUser.id} via ${request.paymentService}. Phone number: ${request.phone ?? 'N/A'}, Amount: ${request.amountKes} KES',
       );
     } on DioException catch (error) {
       final mappedError = mapDioException(
