@@ -302,6 +302,64 @@ class AuthController extends Notifier<AuthState> {
     }
   }
 
+  Future<bool> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phone,
+  }) async {
+    final trimmedFirstName = firstName.trim();
+    final trimmedLastName = lastName.trim();
+    final trimmedEmail = email.trim();
+    final trimmedPhone = phone.trim();
+
+    if (trimmedFirstName.isEmpty ||
+        trimmedLastName.isEmpty ||
+        trimmedEmail.isEmpty) {
+      state = state.copyWith(
+        errorMessage: 'Please provide your name and email address.',
+      );
+      return false;
+    }
+
+    if (!RegExp(r'^\d+$').hasMatch(trimmedPhone)) {
+      state = state.copyWith(
+        errorMessage: 'Phone number must contain digits only.',
+      );
+      return false;
+    }
+
+    state = state.copyWith(isSubmitting: true, clearError: true);
+
+    try {
+      final authUser = state.authUser;
+      if (authUser == null) {
+        throw const RequestException('You must be logged in to update your profile.');
+      }
+
+      final profile = await _userRequests.updateProfile(
+        userId: authUser.id,
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName,
+        email: trimmedEmail,
+        phone: int.parse(trimmedPhone),
+      );
+
+      state = state.copyWith(
+        isSubmitting: false,
+        profile: profile,
+        clearError: true,
+      );
+      return true;
+    } catch (error) {
+      state = state.copyWith(
+        isSubmitting: false,
+        errorMessage: _friendlyError(error),
+      );
+      return false;
+    }
+  }
+
   Future<void> refreshProfile() async {
     final authUser = state.authUser ?? _supabase.auth.currentUser;
     if (authUser == null) {

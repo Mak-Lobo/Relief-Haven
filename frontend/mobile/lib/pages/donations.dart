@@ -21,7 +21,7 @@ class DonationScreen extends ConsumerStatefulWidget {
 }
 
 class _DonationScreenState extends ConsumerState<DonationScreen> {
-  bool showDonationForm = true;
+  bool showDonationForm = false;
 
   @override
   void dispose() {
@@ -99,7 +99,7 @@ class _DonationScreenState extends ConsumerState<DonationScreen> {
                     opacity: animation,
                     child: SizeTransition(
                       sizeFactor: animation,
-                      axisAlignment: -1.0,
+                      alignment: .center,
                       child: child,
                     ),
                   );
@@ -261,6 +261,8 @@ class _DonationFormState extends ConsumerState<_DonationForm> {
 
     if (amount == null || amount <= 0) {
       toastification.show(
+        alignment: .bottomCenter,
+        autoCloseDuration: const Duration(seconds: 5),
         type: .warning,
         style: .flatColored,
         description: Text('Please enter a valid donation amount.'),
@@ -319,6 +321,8 @@ class _DonationFormState extends ConsumerState<_DonationForm> {
       ref.invalidate(donationHistoryProvider);
 
       toastification.show(
+        autoCloseDuration: const Duration(seconds: 5),
+        alignment: .bottomCenter,
         type: .success,
         style: .flatColored,
         description: Text('Donation successful.'),
@@ -330,11 +334,12 @@ class _DonationFormState extends ConsumerState<_DonationForm> {
       }
 
       toastification.show(
+        alignment: .bottomCenter,
         type: .error,
         style: .flatColored,
         description: Text('Donation failed: $error'),
         icon: const Icon(Icons.error),
-        autoCloseDuration: const Duration(milliseconds: 2500),
+        autoCloseDuration: const Duration(milliseconds: 5000),
       );
     } catch (error) {
       if (!mounted) {
@@ -538,17 +543,17 @@ class _DonationHistoryCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _paymentLabelForService(donation.paymentService),
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colors.onSurface.withValues(alpha: 0.8),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
+                // Text(
+                //   _paymentLabelForService(donation.paymentService),
+                //   style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                //     color: colors.onSurface.withValues(alpha: 0.8),
+                //     fontWeight: FontWeight.w600,
+                //   ),
+                // ),
+                // const SizedBox(height: 4),
                 Text(
                   donation.formattedDate,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: colors.onSurface.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w500,
                   ),
@@ -558,15 +563,15 @@ class _DonationHistoryCard extends StatelessWidget {
                   donation.formattedAmount,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: colors.onSurface,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            width: 34,
-            height: 32,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
               color: colors.primaryContainer,
               shape: BoxShape.circle,
@@ -574,8 +579,8 @@ class _DonationHistoryCard extends StatelessWidget {
             child: Center(
               child: Image.asset(
                 _paymentAssetForService(donation.paymentService),
-                height: 24,
-                width: 20,
+                height: 32,
+                width: 32,
               ),
             ),
           ),
@@ -593,13 +598,13 @@ String _paymentAssetForService(String paymentService) {
   return PaymentOption.mpesa.assetPath;
 }
 
-String _paymentLabelForService(String paymentService) {
-  final normalized = paymentService.trim().toLowerCase();
-  if (normalized.contains('airtel')) {
-    return PaymentOption.airtel.displayLabel;
-  }
-  return PaymentOption.mpesa.displayLabel;
-}
+// String _paymentLabelForService(String paymentService) {
+//   final normalized = paymentService.trim().toLowerCase();
+//   if (normalized.contains('airtel')) {
+//     return PaymentOption.airtel.displayLabel;
+//   }
+//   return PaymentOption.mpesa.displayLabel;
+// }
 
 String _friendlyErrorText(Object error) => error is RequestException
     ? error.message

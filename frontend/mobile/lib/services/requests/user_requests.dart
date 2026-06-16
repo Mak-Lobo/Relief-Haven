@@ -190,6 +190,48 @@ class UserRequests extends Base {
     return fetchUserData(currentUser.id);
   }
 
+  Future<UserModel?> updateProfile({
+    required String userId,
+    required String firstName,
+    required String lastName,
+    required String email,
+    required int phone,
+  }) async {
+    final trimmedEmail = email.trim();
+    if (trimmedEmail.isEmpty) {
+      throw const RequestException('Please provide your email address.');
+    }
+
+    final authResult = await _supabase.auth.updateUser(
+      UserAttributes(email: trimmedEmail),
+    );
+    if (authResult.user == null) {
+      throw const RequestException('Unable to update your auth profile.');
+    }
+
+    try {
+      final response = await dio.put(
+        '/users/$userId',
+        data: {
+          'first_name': firstName.trim(),
+          'last_name': lastName.trim(),
+          'email': trimmedEmail,
+          'phone': phone,
+        },
+      );
+
+      if (response.statusCode == 200 && response.data is Map<String, dynamic>) {
+        return UserModel.fromJson(response.data);
+      }
+      return null;
+    } on DioException catch (error) {
+      throw mapDioException(
+        error,
+        fallbackMessage: 'Unable to update your profile right now.',
+      );
+    }
+  }
+
   _SplitName _splitName(String name) {
     final parts = name
         .trim()

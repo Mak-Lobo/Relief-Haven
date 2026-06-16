@@ -3,20 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/navigation_model.dart';
 import '../providers/navigation_provider.dart';
+import '../providers/connectivity_provider.dart';
 
 class RouteDetailsSheet extends ConsumerWidget {
   const RouteDetailsSheet({
     super.key,
     required this.shelter,
+    this.isNavigating = false,
     this.onStartNavigation,
+    this.onCancelNavigation,
   });
 
   final NearestShelterRouteModel shelter;
+  final bool isNavigating;
   final VoidCallback? onStartNavigation;
+  final VoidCallback? onCancelNavigation;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final routeAsync = ref.watch(routeToShelterProvider(shelter.shelterId));
+    final isOffline = ref.watch(isOfflineProvider);
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -38,7 +44,9 @@ class RouteDetailsSheet extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                error.toString(),
+                isOffline 
+                  ? 'Showing location from cache. Distances are hidden while offline.' 
+                  : error.toString(),
                 textAlign: TextAlign.center,
                 style: textTheme.bodyMedium?.copyWith(
                   color: colors.onSurfaceVariant,
@@ -67,45 +75,14 @@ class RouteDetailsSheet extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 20),
-            _RouteSummaryCard(route: route),
-            const SizedBox(height: 16),
-            // Container(
-            //   width: double.infinity,
-            //   padding: const EdgeInsets.all(18),
-            //   decoration: BoxDecoration(
-            //     color: colors.surfaceContainerHighest,
-            //     borderRadius: BorderRadius.circular(24),
-            //   ),
-            //   child: Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children: [
-            //       Text(
-            //         'Route path',
-            //         style: textTheme.titleMedium?.copyWith(
-            //           fontWeight: FontWeight.w700,
-            //         ),
-            //       ),
-            //       const SizedBox(height: 10),
-            //       Text(
-            //         route.geometry.isEmpty
-            //             ? 'The backend did not return detailed geometry for this route.'
-            //             : 'Detailed geometry received with ${route.geometry.length} route points.',
-            //         style: textTheme.bodyMedium?.copyWith(
-            //           color: colors.onSurfaceVariant,
-            //         ),
-            //       ),
-            //       const SizedBox(height: 16),
-            //       SizedBox(
-            //         width: double.infinity,
-            //         child: FilledButton.icon(
-            //           onPressed: onStartNavigation ?? () => Navigator.of(context).pop(),
-            //           icon: const Icon(Icons.navigation_rounded),
-            //           label: const Text('Start navigation'),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
+            _RouteSummaryCard(
+              route: route,
+              liveShelter: shelter,
+              isOffline: isOffline,
+              isNavigating: isNavigating,
+              onStartNavigation: onStartNavigation,
+              onCancelNavigation: onCancelNavigation,
+            ),
           ],
         );
       },
@@ -114,9 +91,21 @@ class RouteDetailsSheet extends ConsumerWidget {
 }
 
 class _RouteSummaryCard extends StatelessWidget {
-  const _RouteSummaryCard({required this.route});
+  const _RouteSummaryCard({
+    required this.route,
+    required this.liveShelter,
+    required this.isOffline,
+    required this.isNavigating,
+    this.onStartNavigation,
+    this.onCancelNavigation,
+  });
 
   final NavigationRouteModel route;
+  final NearestShelterRouteModel liveShelter;
+  final bool isOffline;
+  final bool isNavigating;
+  final VoidCallback? onStartNavigation;
+  final VoidCallback? onCancelNavigation;
 
   @override
   Widget build(BuildContext context) {
@@ -133,52 +122,77 @@ class _RouteSummaryCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: colors.primaryContainer,
+        color: isNavigating
+            ? colors.surfaceContainerHighest
+            : colors.primaryContainer,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              _MiniInfoChip(
-                icon: Icons.alt_route_rounded,
-                label: '${route.distanceKm.toStringAsFixed(1)} km',
-                background: colors.secondaryContainer,
-                foreground: colors.onSecondaryContainer,
-              ),
-              _MiniInfoChip(
-                icon: Icons.schedule_rounded,
-                label: durationLabel,
-                background: colors.tertiaryContainer,
-                foreground: colors.onTertiaryContainer,
-              ),
-            ],
-          ),
+          if (!isOffline)
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                _MiniInfoChip(
+                  icon: Icons.alt_route_rounded,
+                  label: liveShelter.distanceLabel, // Consistency fix
+                  background: colors.secondaryContainer,
+                  foreground: colors.onSecondaryContainer,
+                ),
+                _MiniInfoChip(
+                  icon: Icons.schedule_rounded,
+                  label: durationLabel,
+                  background: colors.tertiaryContainer,
+                  foreground: colors.onTertiaryContainer,
+                ),
+              ],
+            ),
           const SizedBox(height: 14),
           Text(
-            'Navigation route is ready to guide you to the shelter.',
+            isNavigating
+                ? 'Keep following the route. You are almost there!'
+                : 'Navigation route is ready to guide you to the shelter.',
             style: textTheme.bodyLarge?.copyWith(
-              color: colors.onPrimaryContainer,
+              color: isNavigating
+                  ? colors.onSurface
+                  : colors.onPrimaryContainer,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Estimated distance: ${route.distanceMeters.toStringAsFixed(0)} meters',
-            style: textTheme.bodyMedium?.copyWith(
-              color: colors.onPrimaryContainer.withValues(alpha: 0.78),
+          if (!isOffline) const SizedBox(height: 8),
+          if (!isOffline)
+            Text(
+              'Estimated distance: ${liveShelter.distanceMeters.toStringAsFixed(0)} meters',
+              style: textTheme.bodyMedium?.copyWith(
+                color:
+                    (isNavigating ? colors.onSurface : colors.onPrimaryContainer)
+                        .withValues(alpha: 0.78),
+              ),
             ),
+          Divider(
+            color: isNavigating ? colors.outline : colors.onPrimary,
+            thickness: 1.75,
           ),
-          Divider(color: colors.onPrimary, thickness: 1.75),
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: const Icon(Icons.navigation_rounded),
-              label: const Text('Start navigation'),
+              onPressed: isNavigating
+                  ? (onCancelNavigation ?? () => Navigator.of(context).pop())
+                  : (onStartNavigation ?? () {}),
+              style: FilledButton.styleFrom(
+                backgroundColor: isNavigating ? colors.error : colors.primary,
+                foregroundColor: isNavigating
+                    ? colors.onError
+                    : colors.onPrimary,
+              ),
+              icon: Icon(
+                isNavigating ? Icons.close_rounded : Icons.navigation_rounded,
+              ),
+              label: Text(
+                isNavigating ? 'Cancel navigation' : 'Start navigation',
+              ),
             ),
           ),
         ],

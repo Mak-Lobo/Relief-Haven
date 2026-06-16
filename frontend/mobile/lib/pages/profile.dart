@@ -247,7 +247,7 @@ class _ProfileActions extends StatelessWidget {
       children: [
         Expanded(
           child: ElevatedButton(
-            onPressed: isSubmitting ? null : onRefresh,
+            onPressed: isSubmitting ? null : () => Navigator.of(context).pushNamed('/edit-profile'),
             style: ElevatedButton.styleFrom(
               backgroundColor: colors.primary,
               foregroundColor: colors.onPrimary,
@@ -258,9 +258,9 @@ class _ProfileActions extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const Icon(Icons.refresh_rounded),
+                const Icon(Icons.edit_rounded),
                 Text(
-                  'Refresh',
+                  'Edit Profile',
                   style: textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: colors.onPrimary,

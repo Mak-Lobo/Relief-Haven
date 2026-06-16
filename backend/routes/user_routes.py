@@ -2,7 +2,7 @@ from typing import List
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, logger
 
-from models.users import UserIn, UserOut, UserRoleUpdate
+from models.users import UserIn, UserOut, UserRoleUpdate, UserProfileUpdate
 from services.database import get_pool
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -49,6 +49,31 @@ async def sync_user(user: UserIn, pool=Depends(get_pool)):
     except Exception as e:
         logger.logger.error(f"Failed to sync user: {e}")
         raise HTTPException(status_code=500, detail="Failed to sync user")
+
+
+@router.put("/{user_id}", response_model=UserOut)
+async def update_user_profile(
+    user_id: UUID, profile_update: UserProfileUpdate, pool=Depends(get_pool)
+):
+    """Update the editable profile fields for a user."""
+    query = """
+        SELECT * FROM haven_upsert_user($1, $2, $3, $4, $5, $6, $7)
+    """
+    async with pool.acquire() as conn:
+        current = await conn.fetchrow("SELECT * FROM haven_get_user_by_id($1)", user_id)
+        if not current:
+            raise HTTPException(status_code=404, detail="User not found")
+        result = await conn.fetchrow(
+            query,
+            user_id,
+            profile_update.first_name,
+            profile_update.last_name,
+            profile_update.email,
+            profile_update.phone,
+            current["role_user"],
+            current["county_work"],
+        )
+    return dict(result)
 
 
 @router.put("/{user_id}/role", response_model=UserOut)

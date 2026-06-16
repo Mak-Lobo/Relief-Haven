@@ -49,6 +49,7 @@ dependencies:
   flutter_markdown_plus: any
   flutter_map_tile_caching: ^10.1.1
   path_provider: ^2.1.5
+  mixpanel_flutter: ^2.0.0
 
 
 dev_dependencies:

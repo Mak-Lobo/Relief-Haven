@@ -7,12 +7,7 @@ import common from "../../styles/views-common.module.css";
 import styles from "../../styles/dashboard.module.css";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {getShelters} from "../../services/shelter/shelterService";
-
-const metricCards = [
-    {icon: MdOutlinePayments, value: "KES 200,000", label: "Total donations"},
-    {icon: MdOutlineHomeWork, value: "87%", label: "Average occupancy"},
-    {icon: MdOutlineErrorOutline, value: "10", label: "Active alerts"},
-];
+import {getDonations} from "../../services/donationService";
 
 const parsePoint = (value) => {
     const match = value?.match(/^POINT\(([-\d.]+)\s+([-\d.]+)\)$/);
@@ -32,25 +27,44 @@ const shelterPin = divIcon({
 const Dashboard = () => {
     const {user} = useAuth();
     const [shelters, setShelters] = useState([]);
+    const [donationsTotal, setDonationsTotal] = useState(0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadShelters = async () => {
+        const loadDashboardData = async () => {
             if (!user?.token) return;
 
             try {
-                setLoading(true);
-                const data = await getShelters(user.token);
-                setShelters(data);
+                const [shelterData, donationData] = await Promise.all([
+                    getShelters(user.token),
+                    getDonations(user.token)
+                ]);
+                
+                setShelters(shelterData);
+                
+                const total = donationData.reduce((sum, d) => sum + d.amount_kes, 0);
+                setDonationsTotal(total);
             } catch (error) {
-                console.error("Error loading shelters:", error);
+                console.error("Error loading dashboard data:", error);
             } finally {
                 setLoading(false);
             }
         };
 
-        loadShelters();
+        loadDashboardData();
+        const interval = setInterval(loadDashboardData, 5000);
+        return () => clearInterval(interval);
     }, [user]);
+
+    const metricCards = [
+        {
+            icon: MdOutlinePayments, 
+            value: `KES ${donationsTotal.toLocaleString(undefined, { minimumFractionDigits: 0 })}`, 
+            label: "Total donations"
+        },
+        {icon: MdOutlineHomeWork, value: "87%", label: "Average occupancy"},
+        {icon: MdOutlineErrorOutline, value: "10", label: "Active alerts"},
+    ];
 
     const shelterMarkers = useMemo(
         () => shelters

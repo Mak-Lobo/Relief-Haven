@@ -72,7 +72,7 @@ const Profile = () => {
                     </div>
 
                     <div className={common.actionRowCentered}>
-                        <button className={common.primaryAction} type="button">
+                        <button className={common.primaryAction} type="button" onClick={() => navigate("/profile/edit")}>
                             <MdEdit/>
                             <span>Edit Profile</span>
                         </button>

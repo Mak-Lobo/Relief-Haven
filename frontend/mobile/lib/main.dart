@@ -3,7 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:relief_haven_mobile/pages/registration.dart';
+import 'package:relief_haven_mobile/pages/edit_profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:toastification/toastification.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
@@ -19,6 +21,15 @@ import 'package:relief_haven_mobile/providers/theme_provider.dart';
 import 'package:relief_haven_mobile/services/requests/base.dart';
 import 'package:relief_haven_mobile/utils/elevated_button.dart';
 
+Mixpanel? mixpanel;
+bool _identified = false;
+
+void _identifyUser(String? userId) {
+  if (_identified || userId == null) return;
+  _identified = true;
+  mixpanel?.identify(userId);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FMTCObjectBoxBackend().initialise();
@@ -29,6 +40,12 @@ void main() async {
   final base = Base();
   final url = dotenv.env['SUPABASE_URL']!;
   final anonKey = dotenv.env['SUPABASE_ANON_KEY']!;
+
+  mixpanel = await Mixpanel.init(
+    dotenv.env['MIXPANEL_TOKEN'] ?? '',
+    trackAutomaticEvents: true,
+  ); // ★ ADDED
+  logger.d('Mixpanel initialized');
 
   await Supabase.initialize(url: url, anonKey: anonKey);
   logger.d('Supabase initialized');
@@ -75,6 +92,7 @@ class MyApp extends ConsumerWidget {
         routes: {
           '/login': (context) => const LoginScreen(),
           '/registration': (context) => const RegistrationScreen(),
+          '/edit-profile': (context) => const EditProfileScreen(),
         },
         home: const AuthGate(),
       ),
@@ -96,6 +114,8 @@ class AuthGate extends ConsumerWidget {
     if (!authState.isAuthenticated) {
       return const LoginScreen();
     }
+
+    _identifyUser(authState.displayName);
 
     return const AppShell();
   }

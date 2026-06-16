@@ -91,6 +91,26 @@ class DonationRequest extends Base {
     }
   }
 
+  Stream<List<DonationModel>> getDonationsStream({required String userId}) async* {
+    // Immediate initial fetch
+    try {
+      yield await fetchUserDonations(userId: userId);
+    } catch (e) {
+      _logger.w('Initial donation stream fetch failed: $e');
+      yield [];
+    }
+
+    // Subsequent polling
+    while (true) {
+      await Future.delayed(const Duration(seconds: 5));
+      try {
+        yield await fetchUserDonations(userId: userId);
+      } catch (e) {
+        _logger.w('Periodic donation stream fetch failed: $e');
+      }
+    }
+  }
+
   Map<String, dynamic>? _extractDonationPayload(dynamic data) {
     if (data is Map<String, dynamic>) {
       final directDonation = data['donation'];

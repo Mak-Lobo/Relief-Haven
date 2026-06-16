@@ -58,8 +58,6 @@ class LocationHelper {
     return metres / 1000;
   }
 
-  // ── Internal checks ────────────────────────────────────────────────────
-
   static Future<void> _ensureServiceEnabled() async {
     final enabled = await Geolocator.isLocationServiceEnabled();
     if (!enabled) {

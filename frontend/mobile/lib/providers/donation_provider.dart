@@ -1,22 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../models/donation_model.dart';
-import '../services/requests/donation_request.dart';
 import 'auth_provider.dart';
+import '../services/requests/donation_request.dart';
 
-final donationRequestProvider = Provider<DonationRequest>((ref) {
-  return DonationRequest();
+final donationRequestProvider = Provider((ref) => DonationRequest());
+
+final donationHistoryProvider = StreamProvider.autoDispose<List<DonationModel>>((ref) {
+  final user = ref.watch(authProvider).authUser;
+  if (user == null) return Stream.value([]);
+  return ref.watch(donationRequestProvider).getDonationsStream(userId: user.id);
 });
-
-final donationHistoryProvider = FutureProvider.autoDispose<List<DonationModel>>(
-  (ref) async {
-    final authState = ref.watch(authProvider);
-    final authUser = authState.authUser;
-    if (authUser == null) {
-      return [];
-    }
-
-    final request = ref.watch(donationRequestProvider);
-    return request.fetchUserDonations(userId: authUser.id);
-  },
-);

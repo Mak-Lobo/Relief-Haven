@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../models/navigation_model.dart';
 import '../services/requests/navigation_request.dart';
@@ -12,32 +13,60 @@ final navigationRequestProvider = Provider<NavigationRequest>((ref) {
 
 final shelterCacheProvider = Provider<ShelterCache>((ref) => ShelterCache());
 
-final nearestSheltersProvider =
-    FutureProvider.autoDispose<List<NearestShelterRouteModel>>((ref) async {
+/// Fetches the initial list of shelters from API or Cache.
+/// Only runs once or when connectivity changes.
+final baseSheltersProvider = FutureProvider.autoDispose<List<NearestShelterRouteModel>>((ref) async {
   final isOffline = ref.watch(isOfflineProvider);
   final cache = ref.watch(shelterCacheProvider);
+  final request = ref.read(navigationRequestProvider);
 
   if (isOffline) {
     return cache.getShelters();
   }
 
   try {
-    final position = await ref.watch(currentPositionProvider.future);
-    final request = ref.watch(navigationRequestProvider);
-
+    final initialPosition = await ref.read(currentPositionProvider.future);
     final shelters = await request.fetchNearestShelters(
-      latitude: position.latitude,
-      longitude: position.longitude,
+      latitude: initialPosition.latitude,
+      longitude: initialPosition.longitude,
     );
-
-    // Save to cache for offline use
     await cache.saveShelters(shelters);
     return shelters;
   } catch (e) {
-    // If request fails but we have cached data, fallback to it
     final cached = await cache.getShelters();
     if (cached.isNotEmpty) return cached;
     rethrow;
+  }
+});
+
+/// Reactively updates and re-sorts the shelter list based on live position.
+final nearestSheltersProvider = StreamProvider.autoDispose<List<NearestShelterRouteModel>>((ref) async* {
+  final positionAsync = ref.watch(positionStreamProvider);
+  final baseSheltersAsync = ref.watch(baseSheltersProvider);
+
+  if (positionAsync.hasValue && baseSheltersAsync.hasValue) {
+    final pos = positionAsync.value!;
+    final baseShelters = baseSheltersAsync.value!;
+
+    final updated = baseShelters.map((s) {
+      final shelterLatLng = s.toLatLng();
+      if (shelterLatLng == null) return s;
+
+      final meters = Geolocator.distanceBetween(
+        pos.latitude,
+        pos.longitude,
+        shelterLatLng.latitude,
+        shelterLatLng.longitude,
+      );
+
+      return s.copyWith(
+        distanceMeters: meters,
+        distanceKm: meters / 1000,
+      );
+    }).toList();
+
+    updated.sort((a, b) => a.distanceMeters.compareTo(b.distanceMeters));
+    yield updated;
   }
 });
 

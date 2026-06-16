@@ -45,6 +45,34 @@ class NearestShelterRouteModel {
     );
   }
 
+  NearestShelterRouteModel copyWith({
+    String? shelterId,
+    String? name,
+    String? subcounty,
+    String? county,
+    String? location,
+    int? capacity,
+    int? occupancy,
+    bool? isActive,
+    double? distanceMeters,
+    double? distanceKm,
+    double? durationSeconds,
+  }) {
+    return NearestShelterRouteModel(
+      shelterId: shelterId ?? this.shelterId,
+      name: name ?? this.name,
+      subcounty: subcounty ?? this.subcounty,
+      county: county ?? this.county,
+      location: location ?? this.location,
+      capacity: capacity ?? this.capacity,
+      occupancy: occupancy ?? this.occupancy,
+      isActive: isActive ?? this.isActive,
+      distanceMeters: distanceMeters ?? this.distanceMeters,
+      distanceKm: distanceKm ?? this.distanceKm,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'shelter_id': shelterId,

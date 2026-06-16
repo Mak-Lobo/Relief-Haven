@@ -5,10 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 
-import '../services/location/user_locate.dart';
 import '../providers/location_provider.dart';
 import '../providers/navigation_provider.dart';
-import 'shimmer_loading.dart';
 
 class UserMap extends ConsumerStatefulWidget {
   const UserMap({super.key});
@@ -110,9 +108,7 @@ class _UserMapState extends ConsumerState<UserMap>
           userAgentPackageName: 'com.example.relief_haven',
           tileProvider: const FMTCStore('mapCache').getTileProvider(),
         ),
-        MarkerLayer(
-          markers: [if (userMarker != null) userMarker, ...shelterMarkers],
-        ),
+        MarkerLayer(markers: [?userMarker, ...shelterMarkers]),
       ],
     );
   }

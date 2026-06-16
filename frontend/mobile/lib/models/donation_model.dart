@@ -27,7 +27,8 @@ class DonationModel {
     ).format(amountKes);
   }
 
-  String get formattedDate => DateFormat('dd MMM yyyy').format(createdAt);
+  String get formattedDate =>
+      DateFormat('dd MMM yyyy, hh:mm a').format(createdAt.add(const Duration(hours: 3)));
 
   factory DonationModel.fromJson(Map<String, dynamic> json) {
     return DonationModel(

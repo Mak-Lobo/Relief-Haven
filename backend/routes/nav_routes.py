@@ -2,6 +2,7 @@
 from typing import List
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
+from loguru import logger
 
 from services.database import get_pool
 from models.nav_logs import NavLogIn, NavLogOut, NearestShelterOut, RouteOut
@@ -36,7 +37,7 @@ async def fetch_available_shelters(
                              location,
                              ST_SetSRID(ST_MakePoint($1, $2), 4326)
                      )
-                LIMIT $3 \
+                LIMIT $3
             """
     async with pool.acquire() as conn:
         rows = await conn.fetch(query, lon, lat, limit)
@@ -81,6 +82,7 @@ async def get_nearest_shelters(
         pool=Depends(get_pool),
 ):
     """Return shelters ranked by actual route distance (OSRM)."""
+    logger.info(f"Fetching nearest shelters for lat={latitude}, lon={longitude}")
     shelters = await fetch_available_shelters(pool, longitude, latitude, candidate_limit)
     if not shelters:
         return []
@@ -89,6 +91,7 @@ async def get_nearest_shelters(
     origin = [longitude, latitude]
     destinations = [[s["coordinates"][0], s["coordinates"][1]] for s in shelters]
 
+    logger.debug(f"Calculating route matrix for {len(destinations)} candidates")
     matrix = await calculate_route_matrix(origin, destinations, profile)
 
     # Attach distance/duration to each shelter
@@ -120,24 +123,33 @@ async def get_route_to_shelter(
         pool=Depends(get_pool),
 ):
     """Get full route geometry from user location to specific shelter."""
-    shelter = await fetch_shelter_by_id(pool, shelter_id)
+    logger.info(f"Route request: shelter={shelter_id}, origin=({latitude}, {longitude})")
+    try:
+        shelter = await fetch_shelter_by_id(pool, shelter_id)
+        logger.debug(f"Found shelter: {shelter['name']}")
 
-    dest_lon, dest_lat = parse_wkt_point(shelter["location"])
-    route = await calculate_route_directions(
-        [longitude, latitude],
-        [dest_lon, dest_lat],
-        profile
-    )
+        dest_lon, dest_lat = parse_wkt_point(shelter["location"])
 
-    return {
-        "shelter_id": shelter["shelter_id"],
-        "name": shelter["name"],
-        "location": shelter["location"],
-        "distance_meters": float(route.distance),
-        "distance_km": round(float(route.distance) / 1000, 2),
-        "duration_seconds": float(route.duration) if route.duration else None,
-        "geometry": route.geometry or []
-    }
+        logger.debug(f"Requesting OSRM directions to {dest_lon}, {dest_lat}")
+        route = await calculate_route_directions(
+            [longitude, latitude],
+            [dest_lon, dest_lat],
+            profile
+        )
+        logger.info(f"Route calculated: {route.distance}m, {len(route.geometry)} points")
+
+        return {
+            "shelter_id": shelter["shelter_id"],
+            "name": shelter["name"],
+            "location": shelter["location"],
+            "distance_meters": float(route.distance),
+            "distance_km": round(float(route.distance) / 1000, 2),
+            "duration_seconds": float(route.duration) if route.duration else None,
+            "geometry": route.geometry or []
+        }
+    except Exception as e:
+        logger.exception(f"Critical error in get_route_to_shelter: {e}")
+        raise
 
 
 @router.post("/logs", response_model=NavLogOut)

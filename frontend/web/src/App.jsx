@@ -9,6 +9,7 @@ import AddShelter from "./pages/views/AddShelter.jsx";
 import UpdateShelter from "./pages/views/UpdateShelter.jsx";
 import ShelterResources from "./pages/views/ShelterResources.jsx";
 import ResourceUpdates from "./pages/views/ResourceUpdates.jsx";
+import EditProfile from "./pages/views/EditProfile.jsx";
 import {PublicGate, RouteGate} from "./components/RouteGate.jsx";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
                     <Route path="resources" element={<ResourceUpdates/>}/>
                     <Route path="financials" element={<Financials/>}/>
                     <Route path="profile" element={<Profile/>}/>
+                    <Route path="profile/edit" element={<EditProfile/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>

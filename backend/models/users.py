@@ -57,3 +57,10 @@ class UserRoleUpdate(BaseModel):
         if role != "manager" and v is not None:
             raise ValueError("county_work can only be set when role is 'manager'")
         return v
+
+
+class UserProfileUpdate(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    phone: int

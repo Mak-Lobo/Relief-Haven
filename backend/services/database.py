@@ -6,7 +6,8 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-pool= asyncpg.Pool
+pool: asyncpg.Pool | None = None
+
 
 async def connect_db():
     global pool
@@ -16,8 +17,10 @@ async def connect_db():
     else:
         print("Failed to establish database connection")
 
+
 async def disconnect_db():
     await pool.close()
+
 
 def get_pool() -> asyncpg.Pool:
     return pool
