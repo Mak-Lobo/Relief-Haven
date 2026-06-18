@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:toastification/toastification.dart';
 
 import 'package:relief_haven_mobile/providers/auth_provider.dart';
@@ -268,7 +266,7 @@ class _ShelterSection extends StatelessWidget {
                   return Column(
                     children: [
                       for (var i = 0; i < shelters.length; i++) ...[
-                        _ShelterCard(
+                        ShelterCard(
                           rank: i + 1,
                           shelter: shelters[i],
                           isOffline: isOffline,
@@ -295,8 +293,8 @@ class _ShelterSection extends StatelessWidget {
   }
 }
 
-class _ShelterCard extends StatelessWidget {
-  const _ShelterCard({
+class ShelterCard extends StatelessWidget {
+  const ShelterCard({
     required this.rank,
     required this.shelter,
     required this.onRoutePressed,
@@ -308,8 +306,8 @@ class _ShelterCard extends StatelessWidget {
   final VoidCallback onRoutePressed;
   final bool isOffline;
 
-  Color _getOfflineColor(int index) {
-    final colors = [Colors.green, Colors.black, Colors.red, Colors.teal];
+  static Color getOfflineColor(int index) {
+    final colors = [Colors.green, Colors.cyan, Colors.red, Colors.teal];
     return colors[index % colors.length];
   }
 
@@ -321,13 +319,9 @@ class _ShelterCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: isOffline
-            ? _getOfflineColor(rank - 1).withValues(alpha: 0.1)
-            : colors.primaryContainer,
+        color: isOffline ? ShelterCard.getOfflineColor(rank - 1).withValues(alpha: 0.1) : colors.primaryContainer,
         borderRadius: BorderRadius.circular(22),
-        border: isOffline
-            ? Border.all(color: _getOfflineColor(rank - 1), width: 1.5)
-            : null,
+        border: isOffline ? Border.all(color: ShelterCard.getOfflineColor(rank - 1), width: 1.5) : null,
       ),
       child: Row(
         children: [
@@ -337,7 +331,7 @@ class _ShelterCard extends StatelessWidget {
               height: 32,
               margin: const EdgeInsets.only(right: 12),
               decoration: BoxDecoration(
-                color: _getOfflineColor(rank - 1),
+                color: ShelterCard.getOfflineColor(rank - 1),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -359,9 +353,7 @@ class _ShelterCard extends StatelessWidget {
                 Text(
                   shelter.name,
                   style: textTheme.titleMedium?.copyWith(
-                    color: isOffline
-                        ? _getOfflineColor(rank - 1)
-                        : colors.onPrimaryContainer,
+                    color: isOffline ? ShelterCard.getOfflineColor(rank - 1) : colors.onPrimaryContainer,
                     fontWeight: FontWeight.w700,
                   ),
                   softWrap: true,
@@ -374,9 +366,7 @@ class _ShelterCard extends StatelessWidget {
             onPressed: onRoutePressed,
             icon: const Icon(Icons.alt_route_rounded),
             style: IconButton.styleFrom(
-              backgroundColor: isOffline
-                  ? _getOfflineColor(rank - 1)
-                  : colors.primary,
+              backgroundColor: isOffline ? ShelterCard.getOfflineColor(rank - 1) : colors.primary,
               foregroundColor: isOffline ? Colors.white : colors.onPrimary,
             ),
           ),
@@ -385,7 +375,6 @@ class _ShelterCard extends StatelessWidget {
     );
   }
 }
-
 class _DistanceChip extends StatelessWidget {
   const _DistanceChip({required this.label});
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:toastification/toastification.dart';
 
+import '../pages/navigation_logs_page.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../pages/faq.dart';
@@ -128,6 +129,23 @@ class AppDrawer extends ConsumerWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const FAQScreen()),
+                  );
+                },
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.history_rounded, color: colors.primary),
+                title: Text(
+                  'Navigation logs',
+                  style: textTheme.bodyLarge?.copyWith(color: colors.onSurface),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NavigationLogsPage(),
+                    ),
                   );
                 },
               ),

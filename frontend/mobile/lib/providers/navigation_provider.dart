@@ -6,6 +6,7 @@ import '../services/requests/navigation_request.dart';
 import '../services/location/shelter_cache.dart';
 import 'location_provider.dart';
 import 'connectivity_provider.dart';
+import 'auth_provider.dart';
 
 final navigationRequestProvider = Provider<NavigationRequest>((ref) {
   return NavigationRequest();
@@ -83,3 +84,24 @@ final routeToShelterProvider =
     );
   },
 );
+
+final navigationLogsProvider = StreamProvider.autoDispose<List<Map<String, dynamic>>>((ref) async* {
+  final user = ref.watch(authProvider).authUser;
+  if (user == null) {
+    yield [];
+    return;
+  }
+  
+  final request = ref.read(navigationRequestProvider);
+  
+  while (true) {
+    try {
+      final response = await request.dio.get('/navigate/logs/user/${user.id}');
+      final logs = (response.data as List).map((log) => log as Map<String, dynamic>).toList();
+      yield logs;
+    } catch (e) {
+      // Keep streaming even on error
+    }
+    await Future.delayed(const Duration(seconds: 10));
+  }
+});

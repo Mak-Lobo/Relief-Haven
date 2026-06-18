@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import styles from "../../styles/auth.module.css";
+import common from "../../styles/views-common.module.css";
+import styles from "../../styles/profile.module.css";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {updateUserProfile} from "../../services/auth/UserUpdate.jsx";
 
@@ -72,37 +73,45 @@ const EditProfile = () => {
     };
 
     return (
-        <div className={styles["main"]}>
-            <div className={styles["authImagePane"]}>
-                <img
-                    className={styles["authLogo"]}
-                    src="/relief-haven-high-resolution-logo.png"
-                    alt="Relief Haven Logo"
-                />
-            </div>
-
-            <section className={styles["registerSection"]}>
-                <h1 className={styles["heading"]}>Edit your Relief Haven profile.</h1>
-                <div className={styles["disclaimer"]}>Keep your account details current.</div>
-
-                <div className={styles["registerFormContainer"]}>
-                    <form className={styles["registerForm"]} onSubmit={handleSubmit}>
-                        <div className={styles["names"]}>
-                            <input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Enter first name" />
-                            <input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Enter last name" />
+        <div className={common.pageFrame}>
+            <div className={styles.profileOuter}>
+                <h1 className={common.pageTitleCentered}>Edit Profile</h1>
+                
+                <div className={styles.profileCard}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <div className={styles.profileGrid}>
+                            <div className={styles.profileField}>
+                                <span className={common.fieldLabel}>First Name</span>
+                                <input className={styles.editInput} name="firstName" value={formData.firstName} onChange={handleChange} placeholder="First name" />
+                            </div>
+                            <div className={styles.profileField}>
+                                <span className={common.fieldLabel}>Last Name</span>
+                                <input className={styles.editInput} name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Last name" />
+                            </div>
+                            <div className={styles.profileField}>
+                                <span className={common.fieldLabel}>Phone Number</span>
+                                <input className={styles.editInput} name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone number" />
+                            </div>
+                            <div className={styles.profileField}>
+                                <span className={common.fieldLabel}>Email Address</span>
+                                <input className={styles.editInput} name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
+                            </div>
                         </div>
-                        <div className={styles["numEmail"]}>
-                            <input name="phone" value={formData.phone} onChange={handleChange} placeholder="Enter phone number" />
-                            <input name="email" value={formData.email} onChange={handleChange} placeholder="Enter email" />
+
+                        {errorMessage ? <p style={{color: "var(--error, #b3261e)", margin: 0, textAlign: 'center'}}>{errorMessage}</p> : null}
+                        {successMessage ? <p style={{color: "var(--primary)", margin: 0, textAlign: 'center'}}>{successMessage}</p> : null}
+
+                        <div className={common.actionRowCentered}>
+                            <button className={common.primaryAction} type="submit" disabled={isSubmitting}>
+                                <span>{isSubmitting ? "Saving..." : "Save changes"}</span>
+                            </button>
+                            <button className={common.dangerAction} type="button" onClick={() => navigate("/profile")}>
+                                <span>Cancel</span>
+                            </button>
                         </div>
-                        {errorMessage ? <p style={{color: "var(--error, #b3261e)", margin: 0}}>{errorMessage}</p> : null}
-                        {successMessage ? <p style={{color: "var(--primary)", margin: 0}}>{successMessage}</p> : null}
-                        <button className={styles["submitButton"]} type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? "Saving..." : "Save changes"}
-                        </button>
                     </form>
                 </div>
-            </section>
+            </div>
         </div>
     );
 };

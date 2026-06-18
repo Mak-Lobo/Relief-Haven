@@ -1,6 +1,7 @@
 import asyncpg
 import os
 from dotenv import load_dotenv
+from loguru import logger
 
 load_dotenv()
 
@@ -13,13 +14,14 @@ async def connect_db():
     global pool
     pool = await asyncpg.create_pool(DATABASE_URL, max_size=50)
     if pool:
-        print("Database connection established")
+        logger.info("Database connection established")
     else:
-        print("Failed to establish database connection")
+        logger.error("Failed to establish database connection")
 
 
 async def disconnect_db():
-    await pool.close()
+    if pool:
+        await pool.close()
 
 
 def get_pool() -> asyncpg.Pool:

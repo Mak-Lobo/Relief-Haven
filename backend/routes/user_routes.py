@@ -1,6 +1,7 @@
 from typing import List
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, logger
+from fastapi import APIRouter, Depends, HTTPException
+from loguru import logger
 
 from models.users import UserIn, UserOut, UserRoleUpdate, UserProfileUpdate
 from services.database import get_pool
@@ -44,10 +45,10 @@ async def sync_user(user: UserIn, pool=Depends(get_pool)):
                 user.role,
                 user.county_work
             )
-        logger.logger.info(f"Synced user: name: {user.first_name} {user.last_name}")
+        logger.info(f"Synced user: name: {user.first_name} {user.last_name}")
         return dict(result)
     except Exception as e:
-        logger.logger.error(f"Failed to sync user: {e}")
+        logger.error(f"Failed to sync user: {e}")
         raise HTTPException(status_code=500, detail="Failed to sync user")
 
 

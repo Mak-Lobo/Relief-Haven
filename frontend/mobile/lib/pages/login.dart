@@ -42,15 +42,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    toastification.show(
-      context: context,
-      type: ToastificationType.success,
-      description: const Text('Welcome back!'),
-      icon: const Icon(Icons.check_circle_outline_rounded),
-    );
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Welcome back.')));
     Navigator.of(context).pushReplacementNamed('/');
   }
 

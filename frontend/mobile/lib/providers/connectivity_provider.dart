@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final connectivityProvider = StreamProvider<ConnectivityResult>((ref) async* {
   final connectivity = Connectivity();
-  
+
   // Get initial status
   final initialResult = await connectivity.checkConnectivity();
   yield initialResult.first;
@@ -21,6 +21,6 @@ final isOfflineProvider = Provider<bool>((ref) {
   return connectivity.when(
     data: (result) => result == ConnectivityResult.none,
     loading: () => false,
-    error: (_, __) => false,
+    error: (_, _) => false,
   );
 });

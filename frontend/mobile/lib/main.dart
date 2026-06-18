@@ -93,6 +93,7 @@ class MyApp extends ConsumerWidget {
           '/login': (context) => const LoginScreen(),
           '/registration': (context) => const RegistrationScreen(),
           '/edit-profile': (context) => const EditProfileScreen(),
+          '/home': (context) => const HomeScreen(),
         },
         home: const AuthGate(),
       ),

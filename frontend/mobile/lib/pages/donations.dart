@@ -273,11 +273,12 @@ class _DonationFormState extends ConsumerState<_DonationForm> {
 
     int? phoneNumber;
     if (_useAccountPhoneNumber) {
-      phoneNumber = int.tryParse('254${profilePhone}');
+      phoneNumber = int.tryParse('254$profilePhone');
       if (phoneNumber == null) {
         toastification.show(
           type: .warning,
           style: .flatColored,
+          autoCloseDuration: const Duration(seconds: 5),
           description: Text('Your account phone number is not available yet.'),
           icon: const Icon(Icons.warning),
         );
@@ -291,6 +292,7 @@ class _DonationFormState extends ConsumerState<_DonationForm> {
         toastification.show(
           type: .warning,
           style: .flatColored,
+          autoCloseDuration: const Duration(seconds: 5),
           description: Text('Please enter a valid phone number.'),
           icon: const Icon(Icons.warning),
         );

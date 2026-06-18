@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from loguru import logger
 
 from services.database import get_pool
-from models.nav_logs import NavLogIn, NavLogOut, NearestShelterOut, RouteOut
+from models.nav_logs import NavLogIn, NavLogOut, NearestShelterOut, RouteOut, NavLogHistoryOut
 from services.routing import calculate_route_matrix, calculate_route_directions
 from utils.geometry import parse_wkt_point, to_wkt_point
 
@@ -156,6 +156,7 @@ async def get_route_to_shelter(
 async def create_nav_log(nav_log: NavLogIn, pool=Depends(get_pool)):
     """Create navigation log entry."""
     async with pool.acquire() as conn:
+        # Explicitly select columns to avoid AmbiguousColumnError
         row = await conn.fetchrow(
             "SELECT * FROM haven_create_nav_log($1, $2, $3, $4)",
             nav_log.user_id,
@@ -187,7 +188,7 @@ async def create_nav_log_auto(
     return await create_nav_log(nav_log, pool)
 
 
-@router.get("/logs/user/{user_id}", response_model=List[NavLogOut])
+@router.get("/logs/user/{user_id}", response_model=List[NavLogHistoryOut])
 async def get_user_nav_logs(user_id: UUID, pool=Depends(get_pool)):
     """Retrieve all navigation logs for a user."""
     async with pool.acquire() as conn:

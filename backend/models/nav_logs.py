@@ -28,6 +28,15 @@ class NavigateRequest(BaseModel):
     longitude: float = Field(ge=-180, le=180)
 
 
+class NavLogHistoryOut(BaseModel):
+    navigation_id: UUID
+    user_id: UUID
+    shelter_id: UUID
+    shelter_name: str
+    distance: float
+    navigation_date: datetime
+
+
 class NearestShelterOut(BaseModel):
     shelter_id: UUID
     name: str

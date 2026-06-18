@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 
+import '../providers/connectivity_provider.dart';
+import '../pages/home.dart';
 import '../providers/location_provider.dart';
 import '../providers/navigation_provider.dart';
 
@@ -37,6 +39,7 @@ class _UserMapState extends ConsumerState<UserMap>
   @override
   Widget build(BuildContext context) {
     final positionAsync = ref.watch(positionStreamProvider);
+    final isOffline = ref.watch(isOfflineProvider);
     final sheltersAsync = ref.watch(nearestSheltersProvider);
     final colors = Theme.of(context).colorScheme;
 
@@ -53,24 +56,30 @@ class _UserMapState extends ConsumerState<UserMap>
 
     final List<Marker> shelterMarkers = sheltersAsync.maybeWhen(
       data: (shelters) => shelters
-          .map((s) {
+          .asMap()
+          .entries
+          .map((entry) {
+            final index = entry.key;
+            final s = entry.value;
             final latLng = s.toLatLng();
             if (latLng == null) return null;
 
-            Color markerColor = Colors.green;
-            if (!s.isActive || s.isFull) {
+            Color markerColor = Colors.redAccent;
+            if (isOffline) {
+              markerColor = ShelterCard.getOfflineColor(index);
+            } else if (!s.isActive || s.isFull) {
               markerColor = Colors.red;
             } else if (s.occupancy >= s.capacity * 0.9) {
               markerColor = Colors.orange;
             }
 
             return Marker(
-              width: 40,
-              height: 40,
+              width: 32,
+              height: 32,
               point: latLng,
               rotate: true,
               alignment: Alignment.topCenter,
-              child: Icon(Icons.location_on, color: markerColor, size: 40),
+              child: Icon(Icons.location_on, color: markerColor, size: 24),
             );
           })
           .whereType<Marker>()

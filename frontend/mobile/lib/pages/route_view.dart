@@ -9,6 +9,7 @@ import '../models/navigation_model.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/location_provider.dart';
 import '../providers/navigation_provider.dart';
+import '../providers/auth_provider.dart';
 
 class RouteViewScreen extends ConsumerStatefulWidget {
   const RouteViewScreen({super.key, required this.shelter});
@@ -36,7 +37,8 @@ class _RouteViewScreenState extends ConsumerState<RouteViewScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      isDismissible: true, // Allow dismiss to see full map
+      isDismissible: true,
+      // Allow dismiss to see full map
       enableDrag: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.transparent,
@@ -85,15 +87,6 @@ class _RouteViewScreenState extends ConsumerState<RouteViewScreen> {
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(32),
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.shadow.withValues(alpha: 0.15),
-                                blurRadius: 20,
-                                offset: const Offset(0, -4),
-                              ),
-                            ],
                           ),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
@@ -119,7 +112,79 @@ class _RouteViewScreenState extends ConsumerState<RouteViewScreen> {
                                       onStartNavigation: () {
                                         setState(() => _isNavigating = true);
                                       },
-                                      onCancelNavigation: () {
+                                      onCancelNavigation: () async {
+                                        final shouldLog =
+                                            await showDialog<bool>(
+                                              context: context,
+                                              builder: (ctx) => AlertDialog(
+                                                backgroundColor: Theme.of(
+                                                  context,
+                                                ).colorScheme.primaryContainer,
+                                                title: Text(
+                                                  'Save trip?',
+                                                  style: TextStyle(
+                                                    fontWeight: .w700,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
+                                                  ),
+                                                ),
+                                                content: Text(
+                                                  'Would you like to save this navigation trip to your records?',
+                                                  style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(
+                                                          ctx,
+                                                          false,
+                                                        ),
+                                                    child: const Text('No'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(
+                                                          ctx,
+                                                          true,
+                                                        ),
+                                                    child: const Text('Yes'),
+                                                  ),
+                                                ],
+                                              ),
+                                            ) ??
+                                            false;
+
+                                        if (shouldLog) {
+                                          final auth = ref.read(authProvider);
+                                          if (auth.authUser != null) {
+                                            await ref
+                                                .read(navigationRequestProvider)
+                                                .dio
+                                                .post(
+                                                  '/navigate/logs/auto',
+                                                  queryParameters: {
+                                                    'user_id':
+                                                        auth.authUser!.id,
+                                                    'shelter_id': widget
+                                                        .shelter
+                                                        .shelterId,
+                                                    'latitude':
+                                                        position.latitude,
+                                                    'longitude':
+                                                        position.longitude,
+                                                  },
+                                                );
+                                          }
+                                        }
+                                        // Navigator.popUntil(
+                                        //   context,
+                                        //   ModalRoute.withName("/home"),
+                                        // );
                                         Navigator.of(context).pop(); // modal
                                         Navigator.of(context).pop(); // screen
                                       },
@@ -158,7 +223,10 @@ class _RouteViewScreenState extends ConsumerState<RouteViewScreen> {
           : AppBar(
               backgroundColor: colors.primary,
               foregroundColor: colors.onPrimary,
-              title: const Text('Navigate to Shelter'),
+              title: const Text(
+                'Navigate to Shelter',
+                style: TextStyle(fontWeight: .w700),
+              ),
             ),
       body: positionAsync.when(
         loading: () => _RouteLoadingState(colors: colors),
@@ -174,7 +242,7 @@ class _RouteViewScreenState extends ConsumerState<RouteViewScreen> {
               final shelterPoint = widget.shelter.toLatLng();
               final routePoints = route.geometry.isNotEmpty
                   ? route.geometry
-                  : <LatLng>[userPoint, if (shelterPoint != null) shelterPoint];
+                  : <LatLng>[userPoint, ?shelterPoint];
 
               return Stack(
                 children: [
@@ -185,7 +253,7 @@ class _RouteViewScreenState extends ConsumerState<RouteViewScreen> {
                         initialZoom: _isNavigating ? 17.0 : 15.5,
                         keepAlive: true,
                         backgroundColor: colors.surfaceContainerLow,
-                        onTap: (_, __) => _showNavigationModal(),
+                        onTap: (_, _) => _showNavigationModal(),
                       ),
                       children: [
                         TileLayer(
@@ -199,9 +267,7 @@ class _RouteViewScreenState extends ConsumerState<RouteViewScreen> {
                               Polyline(
                                 points: routePoints,
                                 strokeWidth: 5.0,
-                                color: colors.inversePrimary.withValues(
-                                  alpha: 0.5,
-                                ),
+                                color: Colors.blue.shade800,
                               ),
                             ],
                           ),
@@ -225,7 +291,7 @@ class _RouteViewScreenState extends ConsumerState<RouteViewScreen> {
                             ),
                             if (shelterPoint != null)
                               Marker(
-                                width: isOffline ? 120 : 40,
+                                width: isOffline ? 80 : 40,
                                 height: isOffline ? 80 : 40,
                                 point: shelterPoint,
                                 alignment: Alignment.topCenter,
