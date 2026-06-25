@@ -7,6 +7,7 @@ import common from "../../styles/views-common.module.css";
 import styles from "../../styles/shelter-form.module.css";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {createShelter} from "../../services/shelter/shelterService";
+import {KENYA_COUNTIES} from "../../constants/counties";
 
 // Fix for default markers in react-leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -154,14 +155,22 @@ const AddShelter = () => {
 
                         <label className={styles.formField}>
                             <span className={common.fieldLabel}>County</span>
-                            <input
+                            <select
                                 className={styles.textInput}
-                                type="text"
                                 name="county"
                                 value={formData.county}
                                 onChange={handleInputChange}
                                 required
-                            />
+                            >
+                                <option value="" disabled>
+                                    Select county
+                                </option>
+                                {KENYA_COUNTIES.map((county) => (
+                                    <option key={county} value={county.toLowerCase()}>
+                                        {county}
+                                    </option>
+                                ))}
+                            </select>
                         </label>
 
                         <label className={styles.formField}>
