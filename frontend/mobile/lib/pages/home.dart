@@ -319,9 +319,16 @@ class ShelterCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: isOffline ? ShelterCard.getOfflineColor(rank - 1).withValues(alpha: 0.1) : colors.primaryContainer,
+        color: isOffline
+            ? ShelterCard.getOfflineColor(rank - 1).withValues(alpha: 0.1)
+            : colors.primaryContainer,
         borderRadius: BorderRadius.circular(22),
-        border: isOffline ? Border.all(color: ShelterCard.getOfflineColor(rank - 1), width: 1.5) : null,
+        border: isOffline
+            ? Border.all(
+                color: ShelterCard.getOfflineColor(rank - 1),
+                width: 1.5,
+              )
+            : null,
       ),
       child: Row(
         children: [
@@ -353,7 +360,9 @@ class ShelterCard extends StatelessWidget {
                 Text(
                   shelter.name,
                   style: textTheme.titleMedium?.copyWith(
-                    color: isOffline ? ShelterCard.getOfflineColor(rank - 1) : colors.onPrimaryContainer,
+                    color: isOffline
+                        ? ShelterCard.getOfflineColor(rank - 1)
+                        : colors.onPrimaryContainer,
                     fontWeight: FontWeight.w700,
                   ),
                   softWrap: true,
@@ -366,7 +375,9 @@ class ShelterCard extends StatelessWidget {
             onPressed: onRoutePressed,
             icon: const Icon(Icons.alt_route_rounded),
             style: IconButton.styleFrom(
-              backgroundColor: isOffline ? ShelterCard.getOfflineColor(rank - 1) : colors.primary,
+              backgroundColor: isOffline
+                  ? ShelterCard.getOfflineColor(rank - 1)
+                  : colors.primary,
               foregroundColor: isOffline ? Colors.white : colors.onPrimary,
             ),
           ),
@@ -375,6 +386,7 @@ class ShelterCard extends StatelessWidget {
     );
   }
 }
+
 class _DistanceChip extends StatelessWidget {
   const _DistanceChip({required this.label});
 
