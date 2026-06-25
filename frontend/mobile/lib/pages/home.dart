@@ -26,6 +26,12 @@ class HomeScreen extends ConsumerWidget {
       final position = await ref.read(currentPositionProvider.future);
       final userLatLng = LatLng(position.latitude, position.longitude);
 
+      // Download shelters and save to cache
+      final savedShelters = await ref.read(baseSheltersProvider.future);
+      final cache = ref.read(shelterCacheProvider);
+      await cache.saveShelters(savedShelters);
+      ref.invalidate(isShelterCacheEmptyProvider);
+
       const store = FMTCStore('mapCache');
       await store.manage.create();
 
@@ -37,14 +43,16 @@ class HomeScreen extends ConsumerWidget {
         ),
       );
 
-      store.download.startForeground(region: region);
-
       toastification.show(
-        title: const Text('Map Download Started'),
-        description: const Text('Downloading maps for your current area...'),
+        title: const Text('Offline Download Started'),
+        description: const Text(
+          'Downloading maps and caching nearby shelters...',
+        ),
         type: ToastificationType.info,
         autoCloseDuration: const Duration(seconds: 4),
       );
+
+      store.download.startForeground(region: region);
     } catch (e) {
       toastification.show(
         title: const Text('Download Failed'),
@@ -60,13 +68,13 @@ class HomeScreen extends ConsumerWidget {
       builder: (context) => AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         title: Text(
-          'Download Offline Map?',
+          'Download Offline Data?',
           style: TextStyle(
             color: Theme.of(context).colorScheme.onPrimaryContainer,
           ),
         ),
         content: Text(
-          'This will download map tiles for a 5km radius around your current location so you can access them without internet.',
+          'This will download map tiles for a 5km radius around your current location and cache nearby shelters so you can access them offline.',
           style: TextStyle(
             color: Theme.of(context).colorScheme.onPrimaryContainer,
           ),
@@ -94,6 +102,7 @@ class HomeScreen extends ConsumerWidget {
     final displayName = ref.watch(authProvider).displayName;
     final firstName = displayName.trim().split(RegExp(r'\s+')).first;
     final isOffline = ref.watch(isOfflineProvider);
+    final isCacheEmpty = ref.watch(isShelterCacheEmptyProvider).value ?? true;
 
     return Scaffold(
       appBar: AppBar(
@@ -131,7 +140,35 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (isOffline)
+            if (isCacheEmpty && isOffline)
+              Container(
+                width: double.infinity,
+                color: colors.errorContainer,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      color: colors.onErrorContainer,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'You are offline and have no cached shelters. Please connect to download.',
+                        style: TextStyle(
+                          color: colors.onErrorContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else if (isOffline)
               Container(
                 width: double.infinity,
                 color: colors.errorContainer,
@@ -255,10 +292,13 @@ class _ShelterSection extends StatelessWidget {
                 ),
                 data: (shelters) {
                   if (shelters.isEmpty) {
-                    return const _ShelterMessageCard(
-                      title: 'No nearby shelters found',
-                      message:
-                          'We could not find any active shelters near your current location.',
+                    return _ShelterMessageCard(
+                      title: isOffline
+                          ? 'No cached shelters'
+                          : 'No nearby shelters found',
+                      message: isOffline
+                          ? 'You are offline and have no cached shelters. Please connect to the internet to download data.'
+                          : 'We could not find any active shelters near your current location.',
                       icon: Icons.location_off_rounded,
                     );
                   }

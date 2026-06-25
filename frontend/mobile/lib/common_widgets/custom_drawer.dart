@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
+import 'package:relief_haven_mobile/services/location/shelter_cache.dart';
 import 'package:toastification/toastification.dart';
 
 import '../pages/navigation_logs_page.dart';
@@ -44,6 +45,7 @@ class AppDrawer extends ConsumerWidget {
     if (confirmed == true) {
       try {
         await const FMTCStore('mapCache').manage.reset();
+        await ShelterCache().clearShelters();
         toastification.show(
           title: const Text('Cache Cleared'),
           description: const Text('All map tiles have been deleted.'),
