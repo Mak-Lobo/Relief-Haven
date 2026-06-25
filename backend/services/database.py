@@ -12,7 +12,7 @@ pool: asyncpg.Pool | None = None
 
 async def connect_db():
     global pool
-    pool = await asyncpg.create_pool(DATABASE_URL, max_size=50)
+    pool = await asyncpg.create_pool(DATABASE_URL, max_size=15)  # max_size=15 is the default for Supabase
     if pool:
         logger.info("Database connection established")
     else:
