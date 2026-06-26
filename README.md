@@ -3,7 +3,13 @@
 
 <img src="images/reliefhaven_logo.png" alt="Relief Haven Logo" style="border-radius: 50%;">
 
-### A final year project for shelter identification and navigation during times of disasters such as floods and fires.
+## A final year project for shelter identification and navigation during times of disasters such as floods and fires.
+### [Web deployment link](https://relief-haven-git-deploy-kabz1.vercel.app/)
+Logins:
+- Username: johndow@gmail.com
+- Password: johndoe
+
+**(The above are just dummies 🙂🙂. Nothing to worry about)**
 
 This project is a full-stack application built using the following technologies:
 
