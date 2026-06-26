@@ -9,6 +9,7 @@ import 'package:relief_haven_mobile/providers/auth_provider.dart';
 import 'package:relief_haven_mobile/providers/chat_provider.dart';
 import 'package:relief_haven_mobile/utils/elevated_button.dart';
 import 'package:relief_haven_mobile/common_widgets/shimmer_loading.dart';
+import 'package:toastification/toastification.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -53,11 +54,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       }
       if (next.errorMessage != null &&
           next.errorMessage != previous?.errorMessage) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: colors.error,
-          ),
+        toastification.show(
+          autoCloseDuration: const Duration(seconds: 3),
+          type: .error,
+          alignment: .bottomCenter,
+          description: Text(next.errorMessage!),
         );
         ref.read(chatProvider.notifier).clearError();
       }

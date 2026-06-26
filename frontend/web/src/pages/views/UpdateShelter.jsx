@@ -4,6 +4,7 @@ import common from "../../styles/views-common.module.css";
 import styles from "../../styles/shelter-form.module.css";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {getShelterById, updateShelter} from "../../services/shelter/shelterService";
+import {KENYA_COUNTIES} from "../../constants/counties";
 
 const UpdateShelter = () => {
     const {shelterId} = useParams();
@@ -137,14 +138,22 @@ const UpdateShelter = () => {
 
                         <label className={styles.formField}>
                             <span className={common.fieldLabel}>County</span>
-                            <input
+                            <select
                                 className={styles.textInput}
-                                type="text"
                                 name="county"
                                 value={formData.county}
                                 onChange={handleInputChange}
                                 required
-                            />
+                            >
+                                <option value="" disabled>
+                                    Select county
+                                </option>
+                                {KENYA_COUNTIES.map((county) => (
+                                    <option key={county} value={county.toLowerCase()}>
+                                        {county}
+                                    </option>
+                                ))}
+                            </select>
                         </label>
 
                         <label className={styles.formField}>

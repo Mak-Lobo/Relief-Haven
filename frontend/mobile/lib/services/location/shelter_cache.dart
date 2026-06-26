@@ -15,8 +15,18 @@ class ShelterCache {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_key);
     if (jsonString == null) return [];
-    
+
     final List<dynamic> data = jsonDecode(jsonString);
-    return data.map((item) => NearestShelterRouteModel.fromJson(item as Map<String, dynamic>)).toList();
+    return data
+        .map(
+          (item) =>
+              NearestShelterRouteModel.fromJson(item as Map<String, dynamic>),
+        )
+        .toList();
+  }
+
+  Future<void> clearShelters() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_key);
   }
 }

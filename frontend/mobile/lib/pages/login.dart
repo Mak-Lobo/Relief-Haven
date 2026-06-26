@@ -64,8 +64,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           icon: const Icon(Icons.error_outline_rounded),
           style: ToastificationStyle.flatColored,
           alignment: Alignment.bottomCenter,
-          backgroundColor: colorScheme.error,
-          foregroundColor: colorScheme.onError,
+          autoCloseDuration: const Duration(seconds: 3),
         );
       }
     });

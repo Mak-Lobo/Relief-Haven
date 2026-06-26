@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import styles from "./../../styles/auth.module.css";
 import {SignUp} from "../../services/auth/SignUp";
+import {KENYA_COUNTIES} from "../../constants/counties";
 
 const Registration = () => {
     const [formData, setFormData] = useState({
@@ -166,11 +167,11 @@ const Registration = () => {
                             <option value="" disabled>
                                 {formData.role === "manager" ? "Select county of work" : "County only applies to managers"}
                             </option>
-                            <option value="nairobi">Nairobi</option>
-                            <option value="mombasa">Mombasa</option>
-                            <option value="kisumu">Kisumu</option>
-                            <option value="nakuru">Nakuru</option>
-                            <option value="kiambu">Kiambu</option>
+                            {KENYA_COUNTIES.map((county) => (
+                                <option key={county} value={county.toLowerCase()}>
+                                    {county}
+                                </option>
+                            ))}
                         </select>
 
                         <input

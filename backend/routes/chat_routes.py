@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Depends
-import logging
+from loguru import logger
 
 from services.ai.ai_connect import generate_content
 from services.database import get_pool
@@ -9,10 +9,8 @@ from models.chat import ChatLogIn, ChatLogOut
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
-logger = logging.getLogger("uvicorn.error")
 
-pool = get_pool()
-
+# pool = get_pool()
 
 @router.post("/new", response_model=ChatLogOut)
 async def gen_new_chat(chat: ChatLogIn, pool=Depends(get_pool)):
