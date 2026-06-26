@@ -9,7 +9,7 @@ Logins:
 - Username: johndow@gmail.com
 - Password: johndoe
 
-**(The above are just dummies 🙂🙂. Nothing to worry about)**
+**(The above are just dummies 🙂🙂. Nothing to worry about😈😈)**
 
 This project is a full-stack application built using the following technologies:
 
