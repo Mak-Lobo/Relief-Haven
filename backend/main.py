@@ -19,7 +19,8 @@ origins = [
     'http://localhost:5173',
     'https://chatter-waffle-freebie.ngrok-free.dev/',
     'https://relief-haven-git-deploy-kabz1.vercel.app',
-    'https://relief-haven.onrender.com'
+    'https://relief-haven.onrender.com',
+    'httos://relief-haven.vercel.app'
 ]
 
 
