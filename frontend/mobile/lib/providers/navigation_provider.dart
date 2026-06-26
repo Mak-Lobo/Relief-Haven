@@ -14,7 +14,9 @@ final navigationRequestProvider = Provider<NavigationRequest>((ref) {
 
 final shelterCacheProvider = Provider<ShelterCache>((ref) => ShelterCache());
 
-final isShelterCacheEmptyProvider = FutureProvider.autoDispose<bool>((ref) async {
+final isShelterCacheEmptyProvider = FutureProvider.autoDispose<bool>((
+  ref,
+) async {
   final cache = ref.watch(shelterCacheProvider);
   final shelters = await cache.getShelters();
   return shelters.isEmpty;
@@ -50,20 +52,20 @@ final baseSheltersProvider =
 /// Reactively updates and re-sorts the shelter list based on live position.
 final nearestSheltersProvider =
     StreamProvider.autoDispose<List<NearestShelterRouteModel>>((ref) async* {
-      final positionAsync = ref.watch(positionStreamProvider);
-      final baseSheltersAsync = ref.watch(baseSheltersProvider);
+      while (true) {
+        ref.invalidate(baseSheltersProvider);
 
-      if (positionAsync.hasValue && baseSheltersAsync.hasValue) {
-        final pos = positionAsync.value!;
-        final baseShelters = baseSheltersAsync.value!;
+        final baseShelters = await ref.read(baseSheltersProvider.future);
+
+        final position = await ref.read(currentPositionProvider.future);
 
         final updated = baseShelters.map((s) {
           final shelterLatLng = s.toLatLng();
           if (shelterLatLng == null) return s;
 
           final meters = Geolocator.distanceBetween(
-            pos.latitude,
-            pos.longitude,
+            position.latitude,
+            position.longitude,
             shelterLatLng.latitude,
             shelterLatLng.longitude,
           );
@@ -72,12 +74,12 @@ final nearestSheltersProvider =
         }).toList();
 
         updated.sort((a, b) => a.distanceMeters.compareTo(b.distanceMeters));
+
         yield updated;
 
-        await Future.delayed(const Duration(seconds: 3));
+        await Future.delayed(const Duration(seconds: 10));
       }
     });
-
 final routeToShelterProvider = FutureProvider.autoDispose
     .family<NavigationRouteModel, String>((ref, shelterId) async {
       final position = await ref.watch(currentPositionProvider.future);
