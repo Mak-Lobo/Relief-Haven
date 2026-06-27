@@ -9,7 +9,7 @@ Logins:
 - Username: johndow@gmail.com
 - Password: johndoe
 
-**[Click here to donwload the apk file (Android only). Create an account with you email address.](/app-build.apk)**
+**[Click here to download the apk file (Android only). Create an account with you email address.](/app-build.apk)**
 
 **(The above are just dummies 🙂🙂. Nothing to worry about😈😈)**
 

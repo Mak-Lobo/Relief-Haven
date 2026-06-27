@@ -10,6 +10,10 @@ import '../pages/home.dart';
 import '../providers/location_provider.dart';
 import '../providers/navigation_provider.dart';
 
+mixin UserMapController on State<UserMap> {
+  Future<void> centerOnUser();
+}
+
 class UserMap extends ConsumerStatefulWidget {
   const UserMap({super.key});
 
@@ -18,7 +22,7 @@ class UserMap extends ConsumerStatefulWidget {
 }
 
 class _UserMapState extends ConsumerState<UserMap>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, UserMapController {
   late final AnimatedMapController _animatedMapController =
       AnimatedMapController(vsync: this);
 
@@ -34,6 +38,15 @@ class _UserMapState extends ConsumerState<UserMap>
 
   void _moveToLocation(LatLng point) {
     _animatedMapController.animateTo(dest: point, zoom: 15);
+  }
+
+  // centering location on user
+  @override
+  Future<void> centerOnUser() async {
+    try {
+      final position = await ref.read(currentPositionProvider.future);
+      _moveToLocation(LatLng(position.latitude, position.longitude));
+    } catch (_) {}
   }
 
   @override

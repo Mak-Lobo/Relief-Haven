@@ -103,6 +103,12 @@ class HomeScreen extends ConsumerWidget {
     final firstName = displayName.trim().split(RegExp(r'\s+')).first;
     final isOffline = ref.watch(isOfflineProvider);
     final isCacheEmpty = ref.watch(isShelterCacheEmptyProvider).value ?? true;
+    final _mapKey = GlobalKey<UserMapController>();
+
+    // recenter user
+    Future<void> _centerOnUser() async {
+      await _mapKey.currentState?.centerOnUser();
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -198,7 +204,10 @@ class HomeScreen extends ConsumerWidget {
               ),
             Stack(
               children: [
-                const SizedBox(height: 350, child: UserMap()),
+                GestureDetector(
+                  onDoubleTap: _centerOnUser,
+                  child: SizedBox(height: 350, child: UserMap(key: _mapKey)),
+                ),
                 const Padding(
                   padding: EdgeInsets.only(top: 300, left: 20, right: 20),
                   child: _ShelterSection(),
