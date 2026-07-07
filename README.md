@@ -9,7 +9,7 @@ Logins:
 - Username: johndow@gmail.com
 - Password: johndoe
 
-**[Click here to download the apk file (Android only). Create an account with you email address.](/app-build.apk)**
+<!-- **[Click here to download the apk file (Android only). Create an account with you email address.](/app-build.apk)** -->
 
 **(The above are just dummies 🙂🙂. Nothing to worry about😈😈)**
 
@@ -25,8 +25,8 @@ This project is a full-stack application built using the following technologies:
 3. Supabase for user authentication (user IDs mapped to PostgreSQL IDs from the frontend)
 
 ## Database 
-The PostgreSQL database is installed in the physical device. However, it can be accessed online upon hosting. 
-The database schema consisted of 6 primary tables:
+The PostgreSQL database is installed on the physical device. However, it can be accessed online upon hosting. 
+The database schema consists of 6 primary tables:
 1. Users - registered users
 2. Shelters - the list of shelters registered to the database
 3. Resources - the resources available at each shelter
